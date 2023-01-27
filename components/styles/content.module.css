@@ -1,0 +1,18 @@
+.content {
+ display: flex;
+ gap: 2rem;
+ min-height: 85vh;
+}
+
+.content-wrapper {
+ width: 100%;
+ min-height: 100vh;
+}
+
+.navbar {
+ height: 4rem;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding-right: 3rem;
+}

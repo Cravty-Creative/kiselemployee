@@ -30,15 +30,14 @@ export default function Home() {
       <PageHeader title="Dashboard" />
       <div className={inter.className}>
         <Content activeMenu="/" pageTitle="Dashboard" menu={listMenu}>
-          <div>hallo</div>
-          <span>Dashboard</span>
-          <Button
+
+          {/* <Button
             label="Logout"
             onClick={async () => {
               await logout();
               router.reload();
             }}
-          />
+          /> */}
         </Content>
       </div>
     </>

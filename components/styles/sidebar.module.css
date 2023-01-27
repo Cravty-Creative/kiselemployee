@@ -1,53 +1,80 @@
 .sidebar {
-  min-height: 100vh;
-  position: relative;
-  width: 20rem;
-  padding: 2rem;
-  background: #F5F7F9;
-  border-right: 1px solid #BEBEBE;
+ min-height: 100vh;
+ position: relative;
+ width: 22rem;
+ padding: 2rem;
+ background: #f5f7f9;
+ border-right: 1px solid #bebebe;
+}
+
+.sidebar.hide {
+ width: 3rem;
+ padding: 2rem 0;
+}
+
+.toggle-sidebar {
+ position: absolute;
+ right: -1.2rem;
+ background-color: #fff;
+ width: 2.4rem;
+ height: 2.4rem;
+ border: 1px solid #dfdfdf;
+ border-radius: 50%;
+ cursor: pointer;
+}
+
+.toggle-sidebar > i {
+ font-size: 12px;
+ font-weight: 600;
+ color: #484848;
+}
+
+.toggle-sidebar:hover {
+ border-color: #ff4141;
 }
 
 .logo-telkomsel {
-  position: relative;
-  object-fit: cover;
-  width: 7rem;
-  height: 2rem;
+ position: relative;
+ object-fit: cover;
+ width: 7rem;
+ height: 2rem;
 }
 
 .menu-wrapper {
-  margin-top: 3rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+ margin-top: 3rem;
+ display: flex;
+ flex-direction: column;
+ gap: 1rem;
 }
 
 .menu {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  padding: 0.7rem 1rem;
-  border-radius: 10px;
-  cursor: pointer;
-  border: 2px solid transparent;
+ display: flex;
+ gap: 1rem;
+ align-items: center;
+ padding: 0.7rem 1rem;
+ border-radius: 10px;
+ cursor: pointer;
+ border: 2px solid transparent;
 }
 
 .menu-icon {
-  font-weight: 500;
+ font-weight: 500;
 }
 
 .menu-title {
-  font-weight: 500;
-  color: #484848;
+ font-weight: 500;
+ color: #484848;
 }
 
-.menu.active, .menu:hover {
-  background-color: #FFEFEF;
+.menu.active,
+.menu:hover {
+ background-color: #ffefef;
 }
 
 .menu:is(.active, :hover) > :is(.menu-title, .menu-icon) {
-  color: #FF4141;
+ color: #ff4141;
 }
 
 .menu:active {
-  border-color: #FF4141;
+ border-color: #ff4141;
 }

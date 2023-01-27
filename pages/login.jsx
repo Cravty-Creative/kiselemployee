@@ -39,53 +39,38 @@ export default function Login() {
     setLoading(true);
     const { username, password } = formLogin.values;
 
-    // await httpCall(
-    //   "POST",
-    //   API.COOKIES,
-    //   JSON.stringify({
-    //     cookie_name: "access_token",
-    //     value: getEncrypt("1234"),
-    //   })
-    // );
-
-    // localStorage.setItem("menu", getEncrypt(JSON.stringify(menu.ADMIN)));
-    // setLoading(false);
-    // router.reload();
     await serviceAuth
       .login({ username, password })
-      .then((res) => {
-        console.log(res);
+      .then(async (res) => {
+        if (res.status !== 200) {
+          toast.current.show({ severity: "warn", summary: "Login Gagal", detail: res.data.message, life: 3000 });
+        } else {
+          toast.current.show({ severity: "success", summary: "Login Berhasil", detail: "Login berhasil, anda akan diarahkan ke dashboard", life: 3000 });
+
+          // set access token ke cookies
+          await httpCall('POST', API.COOKIES, JSON.stringify({
+            cookie_name: 'access_token',
+            value: getEncrypt(JSON.stringify(res.data))
+          }));
+
+          // set menu akses ke local storage
+          const getMenuValue = {
+            'admin': menu.ADMIN,
+            'karyawan': menu.KARYAWAN
+          }
+
+          localStorage.setItem("menu", getEncrypt(JSON.stringify(getMenuValue[res.data.role])));
+
+          // reload halaman
+          router.reload();
+        }
       })
       .catch((err) => {
-        console.log(err);
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: err.response, life: 3000 });
       })
       .finally(() => {
         setLoading(false);
       });
-    // if (formLogin.values.username !== AUTH.username) {
-    //   toast.current.show({ severity: "warn", summary: "Login Gagal", detail: "Username tidak ditemukan", life: 3000 });
-    // } else if (formLogin.values.password !== AUTH.password) {
-    //   toast.current.show({ severity: "warn", summary: "Login Gagal", detail: "Password yang anda masukan tidak sesuai", life: 3000 });
-    // } else {
-    //   await axios({
-    //     method: "POST",
-    //     url: API.COOKIES,
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     data: JSON.stringify({
-    //       cookie_name: "access_token",
-    //       value: "123456",
-    //     }),
-    //   })
-    //     .then((response) => {
-    //       toast.current.show({ severity: "success", summary: "Login Berhasil", detail: "Login berhasil, anda akan diarahkan ke dashboard", life: 3000 });
-    //       router.reload();
-    //     })
-    //     .catch((error) => {
-    //       toast.current.show({ severity: "error", summary: "Sistem Error", detail: "gagal menyimpan access token", life: 3000 });
-    //     });
-    // }
   };
 
   const formLogin = useFormik({
