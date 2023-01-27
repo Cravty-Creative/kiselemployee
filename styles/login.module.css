@@ -1,0 +1,94 @@
+.logo-telkomsel {
+  position: absolute;
+  object-fit: cover;
+  width: 7rem;
+  height: 2rem;
+  top: 2rem;
+  left: 2rem;
+}
+
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+.header-1 {
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.header-2 {
+  margin-top: 2rem;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.header-2 .medium-bold {
+  font-weight: 600;
+}
+
+.body {
+  min-width: 28vw;
+  background-color: #ffffff;
+  border: 1px solid #FFCACA;
+  box-shadow: 1px 1px 40px rgba(111, 111, 111, 0.05);
+  border-radius: 16px;
+  padding: 2.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.body-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.body-header > h1 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.body-header > h3 {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: .7rem;
+  color: #707070;
+}
+
+.input-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-group > label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.input-group > .password-field > input {
+  width: 100%;
+}
+
+.button-login {
+  width: 100%;
+}
+
+.button-login > span {
+  font-weight: 500;
+}
+
+.error-field {
+  font-size: 11px;
+  color: #F55050;
+}

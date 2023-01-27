@@ -14,7 +14,5 @@ export default function handler(req, res) {
     );
 
     res.status(200).json({ message: `set ${cookie_name} cookies success` });
-  } else {
-    res.status(400).json({ message: "Cannot Access" });
-  }
+  } else if (req.method === "GET") res.status(200).json({ message: "get access_token success", data: req.cookies });
 }

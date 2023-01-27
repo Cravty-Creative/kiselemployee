@@ -1,18 +1,32 @@
 import { useState, useRef } from "react";
-import { useFormik } from "formik";
 import { useRouter } from "next/router";
+import { useFormik } from "formik";
+import Image from "next/image";
+import style from "@/styles/login.module.css";
+import httpCall from "@/services";
+import { getEncrypt } from "@/services/encryptDecrypt";
 import * as yup from "yup";
+import * as API from "@/services/constants";
+import * as serviceAuth from "@/services/auth";
+import * as menu from "@/services/menu";
 
-// Component
+// Components
+import PageHeader from "@/components/PageHeader";
+import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import { Checkbox } from "primereact/checkbox";
 import { Toast } from "primereact/toast";
-import { InputText } from "primereact/inputtext";
 
-// Validation
+// Image
+import logoTelkomsel from "@/public/logo_telkomsel.png";
+
+// Font
+import { Inter } from "@next/font/google";
+const inter = Inter({ subsets: ["latin"] });
+
+// Input Validation
 const validationSchema = yup.object().shape({
-  nik: yup.string().min(13, "minimal 13 digit/karakter").required("masukan NIK anda"),
+  username: yup.string().min(4, "minimal 4 digit/karakter").required("masukan username atau NIK anda"),
   password: yup.string().min(6, "minimal 6 karakter").required("password harus diisi"),
 });
 
@@ -20,13 +34,63 @@ export default function Login() {
   const router = useRouter();
   const toast = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = async () => {};
+  const handleLogin = async () => {
+    setLoading(true);
+    const { username, password } = formLogin.values;
+
+    // await httpCall(
+    //   "POST",
+    //   API.COOKIES,
+    //   JSON.stringify({
+    //     cookie_name: "access_token",
+    //     value: getEncrypt("1234"),
+    //   })
+    // );
+
+    // localStorage.setItem("menu", getEncrypt(JSON.stringify(menu.ADMIN)));
+    // setLoading(false);
+    // router.reload();
+    await serviceAuth
+      .login({ username, password })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    // if (formLogin.values.username !== AUTH.username) {
+    //   toast.current.show({ severity: "warn", summary: "Login Gagal", detail: "Username tidak ditemukan", life: 3000 });
+    // } else if (formLogin.values.password !== AUTH.password) {
+    //   toast.current.show({ severity: "warn", summary: "Login Gagal", detail: "Password yang anda masukan tidak sesuai", life: 3000 });
+    // } else {
+    //   await axios({
+    //     method: "POST",
+    //     url: API.COOKIES,
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     data: JSON.stringify({
+    //       cookie_name: "access_token",
+    //       value: "123456",
+    //     }),
+    //   })
+    //     .then((response) => {
+    //       toast.current.show({ severity: "success", summary: "Login Berhasil", detail: "Login berhasil, anda akan diarahkan ke dashboard", life: 3000 });
+    //       router.reload();
+    //     })
+    //     .catch((error) => {
+    //       toast.current.show({ severity: "error", summary: "Sistem Error", detail: "gagal menyimpan access token", life: 3000 });
+    //     });
+    // }
+  };
 
   const formLogin = useFormik({
     initialValues: {
-      nik: "",
+      username: "",
       password: "",
     },
     validationSchema: validationSchema,
@@ -35,7 +99,50 @@ export default function Login() {
 
   return (
     <>
-      <div>Login Page</div>
+      <PageHeader title="Login" />
+      <div className={inter.className}>
+        <div className={style["logo-telkomsel"]}>
+          <Image src={logoTelkomsel} alt="Logo Telkomsel" />
+        </div>
+        <div className={style["wrapper"]}>
+          <h1 className={style["header-1"]}>Sistem Penilaian Kinerja Karyawan</h1>
+          <form onSubmit={formLogin.handleSubmit} className={style["body"]}>
+            <div className={style["body-header"]}>
+              <h1>Login</h1>
+              <h3>Enter your account credentials</h3>
+            </div>
+            <div className={style["input-group"]}>
+              <label htmlFor="username">Username / NIK</label>
+              <InputText
+                id="username"
+                name="username"
+                onChange={formLogin.handleChange}
+                placeholder="masukan NIK anda"
+                className={formLogin.touched["username"] && Boolean(formLogin.errors["username"]) ? "p-invalid" : ""}
+              />
+              {formLogin.touched["username"] && Boolean(formLogin.errors["username"]) && <div className={style["error-field"]}>{formLogin.errors["username"]}</div>}
+            </div>
+            <div className={style["input-group"]}>
+              <label htmlFor="password">Password</label>
+              <Password
+                id="password"
+                name="password"
+                onChange={formLogin.handleChange}
+                placeholder="masukan password anda"
+                toggleMask
+                feedback={false}
+                className={`${style["password-field"]} ${formLogin.touched["username"] && Boolean(formLogin.errors["username"]) ? "p-invalid" : ""}`}
+              />
+              {formLogin.touched["password"] && Boolean(formLogin.errors["password"]) && <div className={style["error-field"]}>{formLogin.errors["password"]}</div>}
+            </div>
+            <Button label="Login" loading={loading} iconPos="right" type="submit" className={style["button-login"]} />
+          </form>
+          <h2 className={style["header-2"]}>
+            by <span className={style["medium-bold"]}>PT. Koperasi Telekomunikasi Seluler</span>
+          </h2>
+        </div>
+        <Toast ref={toast} />
+      </div>
     </>
   );
 }
