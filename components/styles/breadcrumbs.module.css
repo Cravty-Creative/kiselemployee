@@ -1,0 +1,38 @@
+.breadcrumb {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+
+.item {
+  min-height: 2rem;
+  min-width: 2rem;
+  padding: .4rem;
+  border: 1px solid #dfdfdf;
+  border-radius: 5px;
+  background-color: #fff;
+  cursor: pointer;
+  box-shadow: 0px 0px 15px -3px rgba(0,0,0,0.1);
+  color: #383838;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.item:hover {
+  border-color: #888888;
+  color: #484848;
+}
+
+.arrow {
+  color: #888888;
+  margin-right: .5rem;
+}
+
+.item.active {
+  background-color: #F3F5F7;
+  border-color: transparent;
+  box-shadow: none;
+  cursor: default;
+  color: #888888;
+  border-color: transparent;
+}

@@ -82,13 +82,17 @@
 
 .button-login {
   width: 100%;
+  background-color: #FF4141;
+  border: 2px solid transparent;
+  border-radius: 7px;
+  padding: .6rem;
+}
+
+.button-login:is(:hover, :focus) {
+  background-color: #FF4141 !important;
+  border-color: #ff9f9f !important;
 }
 
 .button-login > span {
   font-weight: 500;
-}
-
-.error-field {
-  font-size: 11px;
-  color: #F55050;
 }

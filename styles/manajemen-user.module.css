@@ -1,0 +1,94 @@
+.button-add-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search-wrapper {
+  margin-top: .6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.025);
+}
+
+.tipe-karyawan-field-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tipe-karyawan-field-wrapper > label {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.option-tipe-karyawan {
+  font-size: 14px;
+}
+
+.dropdown-tipe-karyawan {
+  width: fit-content;
+}
+
+.dropdown-tipe-karyawan > span{
+  font-size: 14px;
+}
+
+.search-field-wrapper {
+  display: flex;
+}
+
+.search-field {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.button-search {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.table-wrapper {
+  margin-top: 1rem;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.025);
+}
+
+.no-column, .action-column {
+  text-align: center !important;
+}
+
+.no-column > div {
+  justify-content: center;
+}
+
+.action-column, .no-column {
+  width: 5%;
+}
+
+.table-data-karyawan > thead * {
+  font-weight: 600;
+}
+
+.button-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.button-action > i {
+  font-size: 14px;
+}
+
+.action-menu {
+  width: 6rem;
+}
+
+.action-menu > ul > li > a > span {
+  font-size: 14px;
+}

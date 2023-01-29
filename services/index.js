@@ -16,7 +16,7 @@ export default async function httpCall(method, url, data = null, headers = null)
   }
 
   if (headers !== null) {
-    config.headers = { ...config.headers, headers };
+    config.headers = { ...config.headers, ...headers };
   }
 
   await axios(config)

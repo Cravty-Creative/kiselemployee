@@ -1,7 +1,7 @@
 .content {
  display: flex;
- gap: 2rem;
- min-height: 85vh;
+ min-height: 75vh;
+ background: #f5f5f5;
 }
 
 .content-wrapper {
@@ -15,4 +15,100 @@
  justify-content: space-between;
  align-items: center;
  padding-right: 3rem;
+ background-color: #fff;
+ padding-left: 2rem;
+ border-bottom: 1px solid #dfdfdf;
+}
+
+.acc-menu-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #fff;
+  outline: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+}
+
+.acc-menu-wrapper:hover {
+  border-color: #dfdfdf;
+  box-shadow: 0px 0px 15px -3px rgba(0,0,0,0.1);
+}
+
+.acc-menu-wrapper:is(:active, :focus) {
+  border-color: #ffc1c1;
+  box-shadow: 0px 0px 15px -3px rgba(255, 83, 83, 0.4);
+}
+
+.acc-photo {
+  background-color: #eaeaea;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.acc-photo > i {
+  font-size: 12px;
+}
+
+.acc-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.acc-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #2d2d2d;
+}
+
+.acc-job {
+  color: #888888;
+}
+
+.acc-menu-wrapper > i {
+  color: #888888;
+}
+
+.content-data {
+  padding: 1rem 2rem;
+  min-height: 85vh;
+}
+
+.page-title {
+  font-weight: 600;
+  font-size: 24px;
+  color: #232323;
+}
+
+.secondary-title {
+  margin-top: 4px;
+  margin-bottom: 1rem;
+  font-weight: 400;
+  font-size: 14px;
+  color: #888888;
+}
+
+.footer {
+  padding: .5rem 2rem;
+}
+
+.footer-body {
+  padding: .5rem 1rem;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 6px;
+  border: 1px solid #dfdfdf;
+}
+
+.footer-body > span {
+  font-size: 12px;
+  color: #888888;
 }

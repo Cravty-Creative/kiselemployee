@@ -1,0 +1,90 @@
+.card {
+  margin-top: 2rem;
+  background-color: #fff;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.025);
+}
+
+.personal-info-wrapper {
+  display: flex;
+  align-items: flex-start;
+}
+
+.personal-info-wrapper > .title {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title > h4 {
+  font-weight: 600;
+}
+
+.title > span {
+  font-weight: 400;
+  font-size: 14px;
+  color: #888888;
+}
+
+.field-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.field > label {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.double-wrapper {
+  display: flex;
+  gap: 1rem;
+}
+
+.double-wrapper > .field {
+  width: 100%;
+}
+
+.password-field {
+  width: 100%;
+}
+
+.dropdown-tipe-user > span {
+  font-size: 14px;
+  padding-top: .6rem;
+  padding-bottom: .6rem;
+}
+
+.footer-form {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-form > .notes {
+  color: #888888;
+  font-size: 13px;
+}
+
+.footer-form > .notes > span {
+  font-size: 15px;
+}
+
+.button-group {
+  display: flex;
+  gap: .6rem;
+}

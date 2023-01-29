@@ -19,3 +19,12 @@ a {
   text-decoration: none;
 }
 
+.required-dot {
+  font-size: 13px;
+  color: red;
+}
+
+.error-field {
+  font-size: 11px;
+  color: #F55050;
+}

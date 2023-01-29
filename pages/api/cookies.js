@@ -2,12 +2,12 @@ import cookie from "cookie";
 
 export default function handler(req, res) {
   if (req.method === "POST") {
-    const { cookie_name, value } = req.body;
+    const { cookie_name, value, max_age } = req.body;
     res.setHeader(
       "Set-Cookie",
       cookie.serialize(cookie_name, value, {
         httpOnly: true,
-        maxAge: 60 * 60,
+        maxAge: max_age !== undefined && max_age !== null ? max_age : 60 * 60,
         sameSite: "strict",
         path: "/",
       })

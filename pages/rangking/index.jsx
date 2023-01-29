@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { getDecrypt } from "@/services/encryptDecrypt";
 import { AppContext } from "@/context";
@@ -6,19 +6,19 @@ import { AppContext } from "@/context";
 // Components
 import PageHeader from "@/components/PageHeader";
 import Content from "@/components/Content";
-import { Button } from "primereact/button";
 
 // Style
-import style from "@/styles/dashboard.module.css";
+import style from "@/styles/rangking-karyawan.module.css";
 
-export default function Home({ access_token, menu = [], activePage }) {
+export default function TambahUser({ access_token, menu = [], activePage }) {
   const router = useRouter();
-  const breadcrumb = [{ label: "Dashboard", url: activePage }];
+  const breadcrumb = [{ label: "Rangking Karyawan", url: activePage }];
+
   return (
     <>
-      <PageHeader title="Dashboard" />
+      <PageHeader title="Rangking Karyawan" />
       <AppContext.Provider value={{ accessToken: access_token, menu: menu, activePage: activePage }}>
-        <Content pageTitle="Dashboard" secondaryTitle={`Welcome back! ${access_token.name}`} breadcrumbItems={breadcrumb}>
+        <Content pageTitle="Rangking Karyawan" secondaryTitle="See who is the best of all your employees" breadcrumbItems={breadcrumb}>
           <span>coming soon</span>
         </Content>
       </AppContext.Provider>

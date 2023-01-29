@@ -3,7 +3,20 @@ import * as API from "./constants";
 
 export const logout = async () => {
   localStorage.clear();
-  return await httpCall("POST", API.AUTH_LOGOUT);
+
+  await httpCall("POST", API.COOKIES, {
+    cookie_name: "access_token",
+    value: null,
+    max_age: 0,
+  });
+
+  await httpCall("POST", API.COOKIES, {
+    cookie_name: "menu",
+    value: null,
+    max_age: 0,
+  });
+
+  return;
 };
 
 export const login = async (data) => {
