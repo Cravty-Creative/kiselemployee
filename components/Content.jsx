@@ -15,7 +15,7 @@ import { Inter } from "@next/font/google";
 import { logout } from "@/services/auth";
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Content({ children, pageTitle = "", secondaryTitle = "", breadcrumbItems }) {
+export default function Content({ children, pageTitle = "", secondaryTitle = "", breadcrumbItems, altHeader }) {
   const router = useRouter();
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const { accessToken, activePage } = useContext(AppContext);
@@ -65,8 +65,13 @@ export default function Content({ children, pageTitle = "", secondaryTitle = "",
           </button>
         </nav>
         <div className={style["content-data"]}>
-          <h1 className={style["page-title"]}>{pageTitle}</h1>
-          <h3 className={style["secondary-title"]}>{secondaryTitle}</h3>
+          <div className={style["header-wrapper"]}>
+            <header>
+              <h1 className={style["page-title"]}>{pageTitle}</h1>
+              <h3 className={style["secondary-title"]}>{secondaryTitle}</h3>
+            </header>
+            {altHeader && <div className={style["alternative-header"]}>{altHeader}</div>}
+          </div>
           <div className={style["data"]}>{children}</div>
         </div>
         <footer className={style["footer"]}>

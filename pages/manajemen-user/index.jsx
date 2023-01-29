@@ -14,6 +14,7 @@ import { InputText } from "primereact/inputtext";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Menu } from "primereact/menu";
+import { ConfirmDialog } from "primereact/confirmdialog";
 
 // Style
 import style from "@/styles/manajemen-user.module.css";
@@ -30,6 +31,8 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
   const [search, setSearch] = useState("");
   const [dataKaryawan, setDataKaryawan] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [visibleDeleteDialog, setVisibleDeleteDialog] = useState(false);
+  const [deleteData, setDeleteData] = useState(null);
   const [loadingTable, setLoadingTable] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
   const [lazyParams, setLazyParams] = useState({
@@ -55,6 +58,10 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
     },
     {
       label: "Delete",
+      command: () => {
+        setDeleteData(selectedRow);
+        setVisibleDeleteDialog(true);
+      },
     },
   ];
 
@@ -89,7 +96,7 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
         } else {
           let dataTemp = (res.data.data || []).map((data, index) => {
             return {
-              no: res.data.first + 1,
+              no: res.data.first + 1 + index,
               id: data.emp_id || null,
               nama_lengkap: data.name || "-",
               username: data.username || "-",
@@ -102,6 +109,27 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
 
           setDataKaryawan(dataTemp);
           setTotalRecords(12);
+        }
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setLoadingTable(false);
+      });
+  };
+
+  const handleDelete = () => {
+    setVisibleDeleteDialog(false);
+    setLoadingTable(true);
+    serviceKaryawan
+      .deleteKaryawan(access_token.token, deleteData.id)
+      .then((res) => {
+        if (res.status !== 200) {
+          toast.current.show({ severity: "warn", summary: "Gagal Menghapus Data Kayawan", detail: res.data.message, life: 3000 });
+        } else {
+          toast.current.show({ severity: "success", summary: "Berhasil Menghapus Data Kayawan", detail: res.data.message, life: 3000 });
+          getAllKaryawan();
         }
       })
       .catch((error) => {
@@ -198,6 +226,17 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
         </Content>
       </AppContext.Provider>
       <Toast ref={toast} />
+      <ConfirmDialog
+        visible={visibleDeleteDialog}
+        onHide={() => setVisibleDeleteDialog(false)}
+        message={`Apakah anda yakin ingin menghapus ${deleteData?.name || ""}`}
+        header="Hapus Karyawan"
+        icon="pi pi-exclamation-triangle"
+        accept={handleDelete}
+        draggable={false}
+        dismissableMask
+        reject={() => setVisibleDeleteDialog(false)}
+      />
     </>
   );
 }

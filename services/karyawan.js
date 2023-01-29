@@ -34,3 +34,20 @@ export const getKaryawanById = async (accessToken, id) => {
     }
   );
 };
+
+export const editKaryawan = async (accessToken, data) => {
+  return await httpCall("PUT", API.BASE_URL + API.USER_EDIT, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
+
+export const deleteKaryawan = async (accessToken, user_id) => {
+  return await httpCall(
+    "DELETE",
+    API.BASE_URL + API.USER_DELETE,
+    { user_id },
+    {
+      Authorization: `Bearer ${accessToken}`,
+    }
+  );
+};

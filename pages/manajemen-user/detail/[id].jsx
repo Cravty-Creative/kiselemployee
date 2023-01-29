@@ -15,6 +15,7 @@ import { Password } from "primereact/password";
 import { Divider } from "primereact/divider";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
+import { ConfirmDialog } from "primereact/confirmdialog";
 
 // Style
 import style from "@/styles/tambah-user.module.css";
@@ -25,16 +26,16 @@ import Loading from "@/components/Loading";
 const validationSchema = yup.object().shape({
   nama_lengkap: yup.string().min(3, "minimal 3 karakter").required("masukan nama lengkap anda"),
   username: yup.string().min(4, "minimal 4 digit/karakter").required("masukan username atau NIK anda"),
-  password: yup.string().min(6, "minimal 6 karakter").required("password harus diisi"),
-  tipe_user: yup
-    .string()
-    .required("pilih salah satu tipe user")
-    .test("tipe-user", "pilih salah satu tipe user", (value) => {
-      if (value === "") {
-        return false;
-      }
-      return true;
-    }),
+  // password: yup.string().min(6, "minimal 6 karakter").required("password harus diisi"),
+  // tipe_user: yup
+  //   .string()
+  //   .required("pilih salah satu tipe user")
+  //   .test("tipe-user", "pilih salah satu tipe user", (value) => {
+  //     if (value === "") {
+  //       return false;
+  //     }
+  //     return true;
+  //   }),
   tipe_karyawan: yup
     .number()
     .required("pilih salah satu tipe karyawan")
@@ -54,20 +55,21 @@ const validationSchema = yup.object().shape({
 export default function TambahUser({ access_token, menu = [], activePage, isDisable, userId }) {
   const router = useRouter();
   const toast = useRef(null);
-  const breadcrumb = [
+
+  const [breadcrumb, setBreadcrumb] = useState([
     { label: "Manajemen User", url: "/manajemen-user" },
     { label: "Details User", url: activePage },
-  ];
-
-  const optionTipeUser = [
-    { label: "Admin", value: "admin" },
-    { label: "Karyawan", value: "karyawan" },
-  ];
-
-  const [pageLoading, setPageLoading] = useState(false);
+  ]);
+  const [pageLoading, setPageLoading] = useState(true);
   const [loadingTipeKaryawan, setLoadingTipeKaryawan] = useState(true);
   const [optionTipeKaryawan, setOptionTipeKaryawan] = useState([]);
   const [userName, setUserName] = useState("");
+  const [tipeUser, setTipeUser] = useState("");
+  const [visibleDeleteDialog, setVisibleDeleteDialog] = useState(false);
+
+  const capitalizeString = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   // HTTP/API CALL
   const getTipeKaryawan = () => {
@@ -91,6 +93,7 @@ export default function TambahUser({ access_token, menu = [], activePage, isDisa
   };
 
   const getDetailKaryawan = (id) => {
+    setPageLoading(true);
     serviceKaryawan
       .getKaryawanById(access_token.token, id)
       .then((res) => {
@@ -100,10 +103,10 @@ export default function TambahUser({ access_token, menu = [], activePage, isDisa
         } else {
           const dt = res.data;
           setUserName(dt.name);
+          setTipeUser(dt.role);
           formUser.setValues({
             nama_lengkap: dt.name || "",
             username: dt.username || "",
-            tipe_user: dt.role || "",
             tipe_karyawan: dt.type_id || "",
             section: dt.section || "",
             lokasi_kerja: dt.work_location || "",
@@ -117,16 +120,84 @@ export default function TambahUser({ access_token, menu = [], activePage, isDisa
       })
       .catch((error) => {
         toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setPageLoading(false);
       });
   };
 
-  const handleEdit = () => {};
+  const handleEdit = () => {
+    setPageLoading(true);
+    const params = {
+      user_id: access_token.id,
+      emp_id: userId,
+      type_id: formUser.values.tipe_karyawan,
+      name: formUser.values.nama_lengkap,
+      section: formUser.values.section,
+      work_location: formUser.values.lokasi_kerja,
+      job_title: formUser.values.pekerjaan,
+      spv1_name: formUser.values.spv1,
+      spv2_name: formUser.values.spv2,
+      spv1_section: formUser.values.spv1_section,
+      spv2_section: formUser.values.spv2_section,
+    };
+    serviceKaryawan
+      .editKaryawan(access_token.token, params)
+      .then((res) => {
+        if (res.status !== 202) {
+          toast.current.show({ severity: "warn", summary: "Gagal Mengubah Detail Karyawan", detail: res.data.message, life: 3000 });
+        } else {
+          toast.current.show({ severity: "success", summary: "Berhasil Mengubah Detail Karyawan", detail: res.data.message, life: 3000 });
+          router.push(`/manajemen-user/detail/${userId}`);
+        }
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setPageLoading(false);
+      });
+  };
+
+  const handleDelete = () => {
+    setVisibleDeleteDialog(false);
+    setPageLoading(true);
+    serviceKaryawan
+      .deleteKaryawan(access_token.token, userId)
+      .then((res) => {
+        if (res.status !== 200) {
+          toast.current.show({ severity: "warn", summary: `Gagal Menghapus ${userName}`, detail: res.data.message, life: 3000 });
+        } else {
+          toast.current.show({ severity: "success", summary: `Berhasil Menghapus ${userName}`, detail: res.data.message, life: 3000 });
+          router.push("/manajemen-user");
+        }
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setPageLoading(false);
+      });
+  };
+
+  const buttonEditTemplate = () => {
+    return (
+      <div className={style2["header-button"]}>
+        <Button onClick={() => setVisibleDeleteDialog(true)} secondary>
+          Hapus
+        </Button>
+        <Button onClick={() => router.push(activePage + "?edit=true")}>
+          <i className="pi pi-pencil" style={{ fontSize: "12px", marginRight: "10px" }}></i>
+          <span>Edit</span>
+        </Button>
+      </div>
+    );
+  };
 
   const formUser = useFormik({
     initialValues: {
       nama_lengkap: "",
       username: "",
-      tipe_user: "",
       tipe_karyawan: "",
       section: "",
       lokasi_kerja: "",
@@ -145,11 +216,26 @@ export default function TambahUser({ access_token, menu = [], activePage, isDisa
     getDetailKaryawan(userId);
   }, []);
 
+  useEffect(() => {
+    if (!isDisable) {
+      setBreadcrumb([
+        { label: "Manajemen User", url: "/manajemen-user" },
+        { label: "Details User", url: `/manajemen-user/detail/${userId}` },
+        { label: "Edit", url: activePage },
+      ]);
+    } else {
+      setBreadcrumb([
+        { label: "Manajemen User", url: "/manajemen-user" },
+        { label: "Details User", url: activePage },
+      ]);
+    }
+  }, [isDisable]);
+
   return (
     <>
       <PageHeader title="Details User" />
       <AppContext.Provider value={{ accessToken: access_token, menu: menu, activePage: activePage }}>
-        <Content pageTitle={userName} secondaryTitle="Details User" breadcrumbItems={breadcrumb}>
+        <Content pageTitle={userName} secondaryTitle={capitalizeString(tipeUser)} breadcrumbItems={breadcrumb} altHeader={!isDisable ? false : buttonEditTemplate()}>
           <form onSubmit={formUser.handleSubmit} className={style["card"]}>
             <div className={style["personal-info-wrapper"]}>
               <div className={style["title"]}>
@@ -179,7 +265,7 @@ export default function TambahUser({ access_token, menu = [], activePage, isDisa
                       id="username"
                       name="username"
                       placeholder="username"
-                      disabled={isDisable}
+                      disabled // disable sementara
                       value={formUser.values["username"]}
                       onChange={formUser.handleChange}
                       className={`p-inputtext-sm ${formUser.touched["username"] && Boolean(formUser.errors["username"]) ? "p-invalid" : ""}`}
@@ -196,20 +282,6 @@ export default function TambahUser({ access_token, menu = [], activePage, isDisa
                 <span>Provide your professional info</span>
               </div>
               <div className={style["field-wrapper"]}>
-                <div className={style["field"]}>
-                  <label htmlFor="tipe-user">Tipe User</label>
-                  <Dropdown
-                    id="tipe_user"
-                    name="tipe_user"
-                    options={optionTipeUser}
-                    value={formUser.values.tipe_user}
-                    onChange={(e) => formUser.setValues({ ...formUser.values, tipe_user: e.value })}
-                    disabled
-                    placeholder="tipe user"
-                    className={`${style["dropdown-tipe-user"]} ${formUser.touched["tipe_user"] && Boolean(formUser.errors["tipe_user"]) ? "p-invalid" : ""}`}
-                  />
-                  {formUser.touched["tipe_user"] && Boolean(formUser.errors["tipe_user"]) && <div className="error-field">{formUser.errors["tipe_user"]}</div>}
-                </div>
                 <div className={style["field"]}>
                   <label htmlFor="tipe-karyawan">Tipe Karyawan</label>
                   <Dropdown
@@ -326,15 +398,17 @@ export default function TambahUser({ access_token, menu = [], activePage, isDisa
                     />
                   </div>
                 </div>
-                <div className={style["footer-form"]}>
-                  <span className={style["notes"]}></span>
-                  <div className={style["button-group"]}>
-                    <Button secondary onClick={() => router.back()}>
-                      Back
-                    </Button>
-                    <Button type="submit">Submit</Button>
+                {!isDisable && (
+                  <div className={style["footer-form"]}>
+                    <span className={style["notes"]}></span>
+                    <div className={style["button-group"]}>
+                      <Button secondary type="button" onClick={() => router.push(`/manajemen-user/detail/${userId}`)}>
+                        Back
+                      </Button>
+                      <Button type="submit">Save</Button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </form>
@@ -342,6 +416,17 @@ export default function TambahUser({ access_token, menu = [], activePage, isDisa
       </AppContext.Provider>
       <Toast ref={toast} />
       <Loading visible={pageLoading} />
+      <ConfirmDialog
+        visible={visibleDeleteDialog}
+        onHide={() => setVisibleDeleteDialog(false)}
+        message={`Apakah anda yakin ingin menghapus ${userName || ""}`}
+        header="Hapus Karyawan"
+        icon="pi pi-exclamation-triangle"
+        accept={handleDelete}
+        draggable={false}
+        dismissableMask
+        reject={() => setVisibleDeleteDialog(false)}
+      />
     </>
   );
 }
