@@ -331,7 +331,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
                     <span className="required-dot">*</span> field ini wajib diisi
                   </span>
                   <div className={style["button-group"]}>
-                    <Button secondary onClick={() => router.back()}>
+                    <Button type="button" secondary onClick={() => router.back()}>
                       Back
                     </Button>
                     <Button type="submit">Submit</Button>

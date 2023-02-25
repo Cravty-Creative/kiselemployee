@@ -72,7 +72,7 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
       .getTipeKaryawan(access_token.token)
       .then((res) => {
         if (res.status !== 200) {
-          toast.current.show({ severity: "warn", summary: "Gagal Mendapatkan Tipe Kayawan", detail: res.data.message, life: 3000 });
+          toast.current.show({ severity: "warn", summary: "Gagal Mendapatkan Tipe Karyawan", detail: res.data.message, life: 3000 });
         } else {
           let dataTemp = res.data.map((item) => ({ label: item.name, value: item.id }));
           setOptionTipeKaryawan(dataTemp);
@@ -89,10 +89,10 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
   const getAllKaryawan = () => {
     setLoadingTable(true);
     serviceKaryawan
-      .getAllKaryawan(access_token.token, lazyParams.first, lazyParams.rows)
+      .getAllKaryawan(access_token.token, lazyParams.first, lazyParams.rows, search, tipeKaryawan || undefined)
       .then((res) => {
         if (res.status !== 200) {
-          toast.current.show({ severity: "warn", summary: "Gagal Mendapatkan Data Kayawan", detail: res.data.message, life: 3000 });
+          toast.current.show({ severity: "warn", summary: "Gagal Mendapatkan Data Karyawan", detail: res.data.message, life: 3000 });
         } else {
           let dataTemp = (res.data.data || []).map((data, index) => {
             return {
@@ -108,7 +108,7 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
           });
 
           setDataKaryawan(dataTemp);
-          setTotalRecords(12);
+          setTotalRecords(res.data.total_rows_filtered);
         }
       })
       .catch((error) => {
@@ -126,9 +126,9 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
       .deleteKaryawan(access_token.token, deleteData.id)
       .then((res) => {
         if (res.status !== 200) {
-          toast.current.show({ severity: "warn", summary: "Gagal Menghapus Data Kayawan", detail: res.data.message, life: 3000 });
+          toast.current.show({ severity: "warn", summary: "Gagal Menghapus Data Karyawan", detail: res.data.message, life: 3000 });
         } else {
-          toast.current.show({ severity: "success", summary: "Berhasil Menghapus Data Kayawan", detail: res.data.message, life: 3000 });
+          toast.current.show({ severity: "success", summary: "Berhasil Menghapus Data Karyawan", detail: res.data.message, life: 3000 });
           getAllKaryawan();
         }
       })
@@ -160,6 +160,10 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
     getAllKaryawan();
   }, []);
 
+  useEffect(() => {
+    getAllKaryawan();
+  }, [lazyParams, tipeKaryawan]);
+
   return (
     <>
       <PageHeader title="Manajemen User" />
@@ -187,7 +191,7 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
                 <i className="pi pi-search" />
                 <InputText value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search" className={`p-inputtext-sm ${style["search-field"]}`} />
               </span>
-              <Button className={style["button-search"]}>
+              <Button className={style["button-search"]} onClick={() => getAllKaryawan()}>
                 <i className="pi pi-search"></i>
               </Button>
             </div>

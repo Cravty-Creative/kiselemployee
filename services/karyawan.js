@@ -7,11 +7,11 @@ export const getTipeKaryawan = async (accessToken) => {
   });
 };
 
-export const getAllKaryawan = async (accessToken, first, rows) => {
+export const getAllKaryawan = async (accessToken, first, rows, name, type_id) => {
   return await httpCall(
     "POST",
     API.BASE_URL + API.USER_GET_ALL,
-    { first, rows },
+    { first, rows, name, type_id },
     {
       Authorization: `Bearer ${accessToken}`,
     }
@@ -50,4 +50,10 @@ export const deleteKaryawan = async (accessToken, user_id) => {
       Authorization: `Bearer ${accessToken}`,
     }
   );
+};
+
+export const getAllSection = async (accessToken) => {
+  return await httpCall("GET", API.BASE_URL + API.GET_SECTION, null, {
+    Authorization: `Bearer ${accessToken}`,
+  });
 };
