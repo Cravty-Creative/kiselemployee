@@ -49,7 +49,7 @@ export default function Content({ children, pageTitle = "", secondaryTitle = "",
   return (
     <div className={`${style["content"]}`}>
       <Sidebar visible={sidebarVisible} setVisible={setSidebarVisible} />
-      <div className={style["content-wrapper"]}>
+      <div className={`${style["content-wrapper"]} ${sidebarVisible ? "" : style["full"]}`}>
         <nav className={style["navbar"]}>
           <Breadcrumbs activePage={activePage} home={breadcrumb.home} items={breadcrumb.items} />
           <Menu model={menuItems} popup ref={menu} id="acc_menu" />
