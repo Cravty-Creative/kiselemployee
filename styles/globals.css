@@ -28,3 +28,7 @@ a {
   font-size: 11px;
   color: #F55050;
 }
+
+div#__next > main .p-component, .p-inputtext  {
+  font-family: var(--font-inter) !important
+}

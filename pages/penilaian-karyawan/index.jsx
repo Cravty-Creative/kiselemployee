@@ -150,12 +150,6 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
             <div className={style["button-tab"]}>
               <Button>Input Nilai Karyawan</Button>
             </div>
-            <div className={style["button-tab"]}>
-              <Button className={style["button-import"]}>Import Nilai Bulanan</Button>
-            </div>
-            <div className={style["button-tab"]}>
-              <Button className={style["button-export"]}>Export Data Penilaian</Button>
-            </div>
           </div>
           <div className={style["search-wrapper"]}>
             <div className={style["dropdown-wrapper"]}>
