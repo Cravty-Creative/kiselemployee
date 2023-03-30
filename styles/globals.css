@@ -32,3 +32,12 @@ a {
 div#__next > main .p-component, .p-inputtext  {
   font-family: var(--font-inter) !important
 }
+
+.p-datatable .p-column-header-content {
+  justify-content: center;
+}
+
+.divider {
+  font-size: 14px;
+  font-weight: 500;
+}

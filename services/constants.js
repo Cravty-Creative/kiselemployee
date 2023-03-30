@@ -9,20 +9,21 @@ export const USER_EDIT = "/user/edit";
 export const USER_DELETE = "/user/delete";
 export const USER_GET_BY_ID = "/user/getbyid";
 export const GET_SECTION = "/user/karyawan/getsection";
+export const GET_DROPDOWN_KARYAWAN = "/user/karyawan/getall";
 
 export const LIST_BULAN = [
-  { label: "Januari", value: "JANUARI" },
-  { label: "Februari", value: "FEBRUARI" },
-  { label: "Maret", value: "MARET" },
-  { label: "April", value: "APRIL" },
-  { label: "Mei", value: "MEI" },
-  { label: "Juni", value: "JUNI" },
-  { label: "Juli", value: "JULI" },
-  { label: "Agustus", value: "AGUSTUS" },
-  { label: "September", value: "SEPTEMBER" },
-  { label: "Oktober", value: "OKTOBER" },
-  { label: "November", value: "NOVEMBER" },
-  { label: "Desember", value: "DESEMBER" },
+  { label: "Januari", value: "January" },
+  { label: "Februari", value: "February" },
+  { label: "Maret", value: "March" },
+  { label: "April", value: "April" },
+  { label: "Mei", value: "May" },
+  { label: "Juni", value: "June" },
+  { label: "Juli", value: "July" },
+  { label: "Agustus", value: "August" },
+  { label: "September", value: "September" },
+  { label: "Oktober", value: "October" },
+  { label: "November", value: "November" },
+  { label: "Desember", value: "December" },
 ];
 
 const getTahun = () => {

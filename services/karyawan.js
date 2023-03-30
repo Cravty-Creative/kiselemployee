@@ -57,3 +57,9 @@ export const getAllSection = async (accessToken) => {
     Authorization: `Bearer ${accessToken}`,
   });
 };
+
+export const getDropdownKaryawan = async (accessToken) => {
+  return await httpCall("GET", API.BASE_URL + API.GET_DROPDOWN_KARYAWAN, null, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
