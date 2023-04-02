@@ -26,17 +26,6 @@ export default function Content({ children, pageTitle = "", secondaryTitle = "",
   };
   const menuItems = [
     {
-      label: "Profile",
-      url: "/profile",
-    },
-    {
-      label: "Settings",
-      url: "/settings",
-    },
-    {
-      separator: true,
-    },
-    {
       label: "Logout",
       icon: "pi pi-sign-out",
       command: async () => {

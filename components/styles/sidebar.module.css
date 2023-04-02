@@ -6,10 +6,12 @@
  border-right: 1px solid #dfdfdf;
  transition: width 2s;
  z-index: 20;
+ width: 16.5rem;
 }
 
 .sidebar.hide {
- padding: 1.3rem 1rem;
+  padding: 1.3rem 1rem;
+  width: fit-content;
 }
 
 .toggle-sidebar {

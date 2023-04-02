@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/router";
 import { getDecrypt } from "@/services/encryptDecrypt";
 import { AppContext } from "@/context";
 import * as serviceKaryawan from "@/services/karyawan.js";
@@ -24,7 +23,6 @@ import { Row } from "primereact/row";
 
 // Style
 import style from "@/styles/penilaian-karyawan.module.css";
-import { classNames } from "primereact/utils";
 import { Divider } from "primereact/divider";
 
 // Input Validation
@@ -44,7 +42,6 @@ const validationSchema = yup.object().shape({
 });
 
 export default function TambahUser({ access_token, menu = [], activePage }) {
-  const router = useRouter();
   const actionMenu = useRef(null);
   const toast = useRef(null);
   const breadcrumb = [{ label: "Penilaian Karyawan", url: activePage }];
@@ -409,7 +406,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
               tableClassName={style["table-data-nilai"]}
               headerColumnGroup={headerTemplate}
             >
-              <Column field="no" header="No" className={style["no-column"]}></Column>
+              <Column field="no" header="No" className={style["no-column"]} style={{ textAlign: "center" }}></Column>
               <Column field="nama" header="Nama Lengkap"></Column>
               <Column field="jabatan" header="Jabatan"></Column>
               <Column field="keaktifan_nilai" style={{ width: "5%", textAlign: "center" }}></Column>

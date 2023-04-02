@@ -20,8 +20,8 @@ export const ADMIN = [
     icon: "pi-calendar",
   },
   {
-    nama: "Rangking Karyawan",
-    url: "/rangking",
+    nama: "Ranking Karyawan",
+    url: "/ranking",
     icon: "pi-star-fill",
   },
 ];
@@ -31,5 +31,10 @@ export const KARYAWAN = [
     nama: "Dashboard",
     url: "/",
     icon: "pi-home",
+  },
+  {
+    nama: "Ranking Karyawan",
+    url: "/ranking",
+    icon: "pi-star-fill",
   },
 ];
