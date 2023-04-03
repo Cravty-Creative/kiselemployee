@@ -1,0 +1,107 @@
+.search-wrapper {
+ margin-top: 1rem;
+ display: flex;
+ justify-content: flex-end;
+ align-items: flex-end;
+ gap: 1rem;
+ background-color: #fff;
+ padding: 1rem;
+ border-radius: 10px;
+ box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.025);
+ z-index: 1;
+}
+
+.field-wrapper {
+ display: flex;
+ flex-direction: column;
+ gap: 0.5rem;
+}
+
+.dropdown-option {
+ font-size: 14px;
+}
+
+.dropdown > span {
+ font-size: 14px;
+}
+
+.dropdown > input {
+ font-size: 14px;
+}
+
+.dropdown.periode-bulan {
+ width: 7rem;
+}
+
+.dropdown.tipe-karyawan {
+ width: 10rem;
+}
+
+.dropdown.limit {
+ width: 7rem;
+}
+
+.btn-tentukan {
+ height: 2.7rem;
+}
+
+.title-ranking {
+ background-color: white;
+ padding: 1rem 2rem;
+ border-radius: 10px;
+ margin-top: 2rem;
+ margin-bottom: 1.5rem;
+ font-weight: 600;
+ font-size: 20px;
+ color: #252525;
+}
+
+.list-ranking {
+ padding: 1.5rem;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ background-color: white;
+ border-radius: 10px;
+}
+
+.title-wrapper {
+ display: flex;
+ align-items: center;
+ gap: 1rem;
+}
+
+.title1 {
+ display: flex;
+ flex-direction: column;
+}
+
+.ranking-no {
+ font-size: 20px;
+ font-weight: 600;
+ margin-right: 1rem;
+}
+
+.ranking-nama {
+ font-size: 18px;
+ font-weight: 500;
+}
+
+.ranking-job {
+ color: #9b9a9a;
+ font-weight: 500;
+}
+
+.title2 {
+ padding: 0.4rem 0.8rem;
+ border-radius: 10px;
+ border: 1px solid red;
+ background-color: #ffefef;
+ color: #ff4141;
+ font-weight: 500;
+}
+
+.ranking-nilai {
+ font-weight: 600;
+ font-size: 22px;
+}
