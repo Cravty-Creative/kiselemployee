@@ -225,13 +225,15 @@ export default function Absensi({ access_token, menu = [], activePage }) {
     // Penentuan SKOR
     if (values.status_masuk === "Alfa") {
       skor_masuk = 1;
-    } else if (values.status_masuk === "Sakit" || values.status_masuk === "Izin"){
+    } else if (values.status_masuk === "Sakit" || values.status_masuk === "Izin") {
       skor_masuk = 2;
     } else {
       const jamMasuk = Number(formatTime(values.jam_masuk).split(":")[0]);
       if (jamMasuk > 9) {
         skor_masuk = 3;
-      } else if (jamMasuk <)
+      } else if (jamMasuk > 9) {
+
+      }
     }
 
     let params = {
@@ -247,9 +249,9 @@ export default function Absensi({ access_token, menu = [], activePage }) {
     console.log(params);
   };
 
-  const handleEdit = (values) => {};
+  const handleEdit = (values) => { };
 
-  const handleConfirmDialog = () => {};
+  const handleConfirmDialog = () => { };
 
   const handleActionClick = (event, rowData) => {
     actionMenu.current.toggle(event);
@@ -637,7 +639,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
               {tipeDialog === "Detail" ? "Tutup" : "Batal"}
             </Button>
             {tipeDialog !== "Detail" && (
-              <Button onClick={() => {}} type="submit">
+              <Button onClick={() => { }} type="submit">
                 Simpan
               </Button>
             )}

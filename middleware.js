@@ -5,10 +5,11 @@ export async function middleware(req) {
   const accessToken = req.cookies.get("access_token")?.value;
   const menu = req.cookies.get("menu")?.value;
   const url = req.nextUrl.clone();
+  const { pathname } = req.nextUrl;
 
   const accessMenu = {
     admin: ["/", "/manajemen-user", "/penilaian-karyawan", "/absensi", "/ranking"],
-    karyawan: ["/", "/rangking"],
+    karyawan: ["/", "/ranking"],
   };
 
   if (accessToken && menu) {
@@ -18,7 +19,7 @@ export async function middleware(req) {
     }
 
     const parsedAccessToken = JSON.parse(getDecrypt(accessToken));
-    if (accessMenu[parsedAccessToken.role].includes(url.pathname) === false) {
+    if (accessMenu[parsedAccessToken.role].some((prefix) => pathname.startsWith(prefix)) === false) {
       url.pathname = "/";
       return NextResponse.redirect(url);
     }

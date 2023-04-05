@@ -94,7 +94,6 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
                 value={periodeBulan}
                 onChange={(e) => {
                   setPeriodeBulan(e.value);
-                  console.log(e.value);
                 }}
               />
             </div>
@@ -114,7 +113,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
               />
             </div>
             <div className={style["field-wrapper"]}>
-              <label htmlFor="limit">Tipe Karyawan</label>
+              <label htmlFor="limit">Limit</label>
               <Dropdown
                 id="limit"
                 options={[
@@ -131,7 +130,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
                 className={`${style["dropdown"]} ${style["limit"]}`}
               />
             </div>
-            <Button onClick={() => {}} className={style["btn-tentukan"]}>
+            <Button onClick={() => { }} className={style["btn-tentukan"]}>
               Tentukan
             </Button>
           </div>

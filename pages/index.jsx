@@ -66,7 +66,7 @@ export default function Home({ access_token, menu = [], activePage }) {
               <div key={i} className={style["list-section-1"]}>
                 <span className={style["title"]}>{item.title ?? ""}</span>
                 <span className={style["jumlah"]}>{item.jumlah ?? ""}</span>
-                <span className={style["last-updated"]}>last updated at {item.last_updated && new Date(item.last_updated).toLocaleDateString()}</span>
+                <span className={style["last-updated"]}>last updated at {item.last_updated}</span>
               </div>
             ))}
           </div>
