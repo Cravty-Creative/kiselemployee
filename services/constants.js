@@ -10,6 +10,12 @@ export const USER_DELETE = "/user/delete";
 export const USER_GET_BY_ID = "/user/getbyid";
 export const GET_SECTION = "/user/karyawan/getsection";
 export const GET_DROPDOWN_KARYAWAN = "/user/karyawan/getall";
+export const NILAI_GET_ALL = "/nilai/getall";
+export const NILAI_EDIT = "/nilai/edit";
+export const NILAI_DELETE = "/nilai/delete";
+export const NILAI_CREATE = "/nilai/create";
+export const PRESENSI_GET_ALL = "/presensi/getall";
+export const PRESENSI_CREATE = "/presensi/create";
 
 export const LIST_BULAN = [
   { label: "Januari", value: "January" },

@@ -24,6 +24,7 @@ import { RadioButton } from "primereact/radiobutton";
 import style from "@/styles/absensi-karyawan.module.css";
 import { classNames } from "primereact/utils";
 import { Divider } from "primereact/divider";
+import Loading from "@/components/Loading";
 
 // Input Validation
 const validationSchema = yup.object().shape({
@@ -42,6 +43,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
   const toast = useRef(null);
   const breadcrumb = [{ label: "Absensi Karyawan", url: activePage }];
 
+  const [pageLoading, setPageLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [optionSection, setOptionSection] = useState([]);
   const [loadingSection, setLoadingSection] = useState(true);
@@ -57,30 +59,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
   const [isHadirKeluar, setIsHadirKeluar] = useState("hadir");
 
   const [dateFilter, setDateFilter] = useState([new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)]);
-  const [dataAbsensi, setdataAbsensi] = useState([
-    {
-      no: 1,
-      id: 1,
-      user_id: 3,
-      nama: "Alfiansyah",
-      hari: "Rabu",
-      tipe_absen: "Masuk",
-      tgl_absen: "19-03-2023",
-      jam: "08:03:15",
-      status: "Hadir",
-    },
-    {
-      no: 1,
-      id: 2,
-      user_id: 3,
-      nama: "Alfiansyah",
-      hari: "Rabu",
-      tipe_absen: "Pulang",
-      tgl_absen: "19-03-2023",
-      jam: null,
-      status: "Alfa",
-    },
-  ]);
+  const [dataAbsensi, setDataAbsensi] = useState([]);
   const [loadingTable, setLoadingTable] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
   const [lazyParams, setLazyParams] = useState({
@@ -142,13 +121,17 @@ export default function Absensi({ access_token, menu = [], activePage }) {
     },
   ];
 
-  const formatDate = (value) => {
+  const formatDate = (value, reverse = false) => {
     const date = new Date(value);
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
 
-    return `${day}-${month}-${year}`;
+    if (reverse) {
+      return `${year}-${month}-${day}`;
+    } else {
+      return `${day}-${month}-${year}`;
+    }
   };
 
   const dateToObject = (date) => {
@@ -159,8 +142,6 @@ export default function Absensi({ access_token, menu = [], activePage }) {
   const formatTime = (date) => {
     return new Date(date).toLocaleTimeString("en-us", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
   };
-
-  const handleConfirmDialog = () => {};
 
   // HTTP/API CALL
   const getSection = () => {
@@ -204,9 +185,71 @@ export default function Absensi({ access_token, menu = [], activePage }) {
       });
   };
 
-  const handleAdd = (values) => {};
+  const getAllAbsensi = () => {
+    setLoadingTable(true);
+    const dateFirst = dateFilter[0] ? formatDate(dateFilter[0], true) : null;
+    const dateSecond = dateFilter[1] ? formatDate(dateFilter[1], true) : formatDate(dateFilter[0], true);
+
+    serviceKaryawan
+      .getAllPresensi(access_token.token, { first: lazyParams.first, rows: lazyParams.rows, section, date_start: dateFirst, date_end: dateSecond })
+      .then((res) => {
+        if (res.status !== 200) {
+          toast.current.show({ severity: "warn", summary: "Gagal Mendapatkan Data Absensi", detail: res.data.message, life: 3000 });
+        } else {
+          let dataTemp = [];
+
+          for (let i = 0; i < res.data.data.length; i++) {
+            dataTemp.push({
+              no: lazyParams.first + i + 1,
+              ...res.data.data[i],
+            });
+          }
+
+          setDataAbsensi(dataTemp);
+          setTotalRecords(res.data.total_rows);
+        }
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setLoadingTable(false);
+      });
+  };
+
+  const handleAdd = (values) => {
+    // setPageLoading(true)
+    let skor_masuk = 1;
+    let skor_pulang = 1;
+
+    // Penentuan SKOR
+    if (values.status_masuk === "Alfa") {
+      skor_masuk = 1;
+    } else if (values.status_masuk === "Sakit" || values.status_masuk === "Izin"){
+      skor_masuk = 2;
+    } else {
+      const jamMasuk = Number(formatTime(values.jam_masuk).split(":")[0]);
+      if (jamMasuk > 9) {
+        skor_masuk = 3;
+      } else if (jamMasuk <)
+    }
+
+    let params = {
+      user_id: values.user_id,
+      tgl_absen: formatDate(values.tgl_absen),
+      jam_masuk: values.status_masuk === "Hadir" ? formatTime(values.jam_masuk) : null,
+      skor_masuk,
+      status_masuk: values.status_masuk,
+      jam_pulang: values.status_pulang === "Hadir" ? formatTime(values.jam_pulang) : null,
+      skor_pulang,
+      status_pulang: values.status_pulang,
+    };
+    console.log(params);
+  };
 
   const handleEdit = (values) => {};
+
+  const handleConfirmDialog = () => {};
 
   const handleActionClick = (event, rowData) => {
     actionMenu.current.toggle(event);
@@ -268,6 +311,10 @@ export default function Absensi({ access_token, menu = [], activePage }) {
     getSection();
   }, []);
 
+  useEffect(() => {
+    getAllAbsensi();
+  }, [lazyParams]);
+
   return (
     <>
       <PageHeader title="Absensi" />
@@ -324,7 +371,12 @@ export default function Absensi({ access_token, menu = [], activePage }) {
                 <i className="pi pi-search" />
                 <InputText value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search" className={`p-inputtext-sm ${style["search-field"]}`} />
               </span>
-              <Button className={style["button-search"]} onClick={() => {}}>
+              <Button
+                className={style["button-search"]}
+                onClick={() => {
+                  getAllAbsensi();
+                }}
+              >
                 <i className="pi pi-search"></i>
               </Button>
             </div>
@@ -417,10 +469,8 @@ export default function Absensi({ access_token, menu = [], activePage }) {
               placeholder="pilih tanggal absen"
               panelClassName={style["dropdown-option"]}
               className={classNames(`${style["dropdown"]} ${style["periode-absen"]}`, { "p-invalid": isFieldError("tgl_absen") })}
-              value={dateToObject(formik.values["tgl_absen"])}
-              onChange={(e) => {
-                formik.setFieldValue("tgl_absen", formatDate(e.value));
-              }}
+              value={formik.values["tgl_absen"]}
+              onChange={formik.handleChange}
               dateFormat="dd/mm/yy"
               readOnlyInput
               disabled={tipeDialog === "Detail"}
@@ -458,7 +508,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
                       setIsHadirKeluar(e.value);
                       formik.setFieldValue("status_masuk", "Alfa");
                       formik.setFieldValue("status_pulang", "Alfa");
-                      formik.setFieldValue("jam_pulang", null);
+                      formik.setFieldValue("jam_pulang", "");
                     }}
                     checked={isHadirMasuk === "tidak_hadir"}
                     disabled={tipeDialog === "Detail"}
@@ -594,6 +644,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
           </div>
         </form>
       </Dialog>
+      <Loading visible={pageLoading} />
     </>
   );
 }

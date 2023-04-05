@@ -35,6 +35,10 @@ export default function Content({ children, pageTitle = "", secondaryTitle = "",
     },
   ];
 
+  useEffect(() => {
+    setSidebarVisible(localStorage.getItem("sidebar") ? localStorage.getItem("sidebar") === "true" : true);
+  }, []);
+
   return (
     <div className={`${style["content"]}`}>
       <Sidebar visible={sidebarVisible} setVisible={setSidebarVisible} />

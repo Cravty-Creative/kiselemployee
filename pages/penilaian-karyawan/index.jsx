@@ -24,6 +24,7 @@ import { Row } from "primereact/row";
 // Style
 import style from "@/styles/penilaian-karyawan.module.css";
 import { Divider } from "primereact/divider";
+import Loading from "@/components/Loading";
 
 // Input Validation
 const validationSchema = yup.object().shape({
@@ -66,38 +67,10 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
 
   const [visibleDialog, setVisibleDialog] = useState(false);
   const [headerDialog, setHeaderDialog] = useState("");
+  const [pageLoading, setPageLoading] = useState(false);
 
   const [selectedRow, setSelectedRow] = useState(null);
-  const [dataNilai, setDataNilai] = useState([
-    {
-      no: 1,
-      user_id: 4,
-      nilai_keaktifan_id: 1,
-      nilai_pengetahuan_id: 2,
-      nilai_action_id: 3,
-      nama: "Alfiansyah2",
-      jabatan: "Gudang",
-      keaktifan_nilai: 4.57,
-      keaktifan_kriteria: 91,
-      pengetahuan_nilai: 5.0,
-      pengetahuan_kriteria: 100,
-      action_nilai: 3.57,
-      action_kriteria: 97,
-      detail: {
-        bulan: "January",
-        tahun: 2023,
-        keaktifan_olahraga: 5,
-        keaktifan_keagamaan: 1,
-        keaktifan_sharing_session: 5,
-        pengetahuan: 5,
-        action_agility: 4,
-        action_customer_centric: 4,
-        action_innovation: 5,
-        action_open_mindset: 3,
-        action_networking: 4,
-      },
-    },
-  ]);
+  const [dataNilai, setDataNilai] = useState([]);
   const [loadingTable, setLoadingTable] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
   const [lazyParams, setLazyParams] = useState({
@@ -115,6 +88,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
         formik.setValues({
           user_id: selectedRow.user_id,
           bulan: selectedRow.detail.bulan,
+          tahun: selectedRow.detail.tahun,
           keaktifan_olahraga: selectedRow.detail.keaktifan_olahraga,
           keaktifan_keagamaan: selectedRow.detail.keaktifan_keagamaan,
           keaktifan_sharing_session: selectedRow.detail.keaktifan_sharing_session,
@@ -136,6 +110,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
         formik.setValues({
           user_id: selectedRow.user_id,
           bulan: selectedRow.detail.bulan,
+          tahun: selectedRow.detail.tahun,
           keaktifan_olahraga: selectedRow.detail.keaktifan_olahraga,
           keaktifan_keagamaan: selectedRow.detail.keaktifan_keagamaan,
           keaktifan_sharing_session: selectedRow.detail.keaktifan_sharing_session,
@@ -161,30 +136,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
     },
   ];
 
-  const handleConfirmDialog = () => {};
-
   // HTTP/API CALL
-  const getTipeKaryawan = () => {
-    if (optionTipeKaryawan.length > 0) return;
-    setLoadingTipeKaryawan(true);
-    serviceKaryawan
-      .getTipeKaryawan(access_token.token)
-      .then((res) => {
-        if (res.status !== 200) {
-          toast.current.show({ severity: "warn", summary: "Gagal Mendapatkan Tipe Karyawan", detail: res.data.message, life: 3000 });
-        } else {
-          let dataTemp = res.data.map((item) => ({ label: item.name, value: item.id }));
-          setOptionTipeKaryawan([{ label: "All", value: "" }, ...dataTemp]);
-        }
-      })
-      .catch((error) => {
-        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
-      })
-      .finally(() => {
-        setLoadingTipeKaryawan(false);
-      });
-  };
-
   const getSection = () => {
     if (optionSection.length > 0) return;
     setLoadingSection(true);
@@ -226,16 +178,175 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
       });
   };
 
-  const getAllPenilaian = () => {};
+  const getAllPenilaian = () => {
+    setLoadingTable(true);
+    serviceKaryawan
+      .getAllPenilaian(access_token.token, { first: lazyParams.first, rows: lazyParams.rows, name: search, section, periode: `${bulan.toLowerCase()} ${tahun}` })
+      .then((res) => {
+        if (res.status !== 200) {
+          toast.current.show({ severity: "warn", summary: "Gagal Mendapatkan Data Nilai", detail: res.data.message, life: 3000 });
+        } else {
+          let dataTemp = [];
+          for (const data of res.data.data) {
+            let temp = { ...data };
+            const date = data.detail.bulan.split(" ");
+            temp.detail.bulan = date[0];
+            temp.detail.tahun = Number(date[1]);
+            dataTemp.push(temp);
+          }
+
+          setDataNilai(dataTemp);
+          setTotalRecords(res.data.data.length > 0 ? res.data.total : 0);
+        }
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setLoadingTable(false);
+      });
+  };
 
   const handleActionClick = (event, rowData) => {
     actionMenu.current.toggle(event);
     setSelectedRow(rowData);
   };
 
-  const handleAdd = () => {};
+  const handleAdd = (values) => {
+    setPageLoading(true);
+    let params = {
+      user_id: values.user_id,
+      bulan: values.bulan,
+      tahun: values.tahun,
+      skor: {
+        keaktifan: {
+          olahraga: values.keaktifan_olahraga,
+          keagamaan: values.keaktifan_keagamaan,
+          sharing_session: values.keaktifan_sharing_session,
+        },
+        pengetahuan: {
+          pengetahuan: values.pengetahuan,
+        },
+        action: {
+          agility: values.action_agility,
+          customer_centric: values.action_customer_centric,
+          innovation: values.action_innovation,
+          open_mindset: values.action_open_mindset,
+          networking: values.action_networking,
+        },
+      },
+    };
 
-  const handleEdit = () => {};
+    let status = null;
+
+    serviceKaryawan
+      .addPenilaian(access_token.token, params)
+      .then((res) => {
+        toast.current.show({
+          severity: res.status === 200 ? "success" : "warn",
+          summary: res.status === 2020 ? "Berhasil Menambah Nilai" : "Gagal Menambah Data Nilai",
+          detail: res.data.message,
+          life: 3000,
+        });
+        status = res.status;
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setHeaderDialog("");
+        setVisibleDialog(false);
+        formik.resetForm();
+        setPageLoading(false);
+        if (status === 200) {
+          getAllPenilaian();
+        }
+      });
+  };
+
+  const handleEdit = (values) => {
+    setPageLoading(true);
+    let params = {
+      user_id: values.user_id,
+      skor: {
+        keaktifan: {
+          id: selectedRow.nilai_keaktifan_id,
+          olahraga: values.keaktifan_olahraga,
+          keagamaan: values.keaktifan_keagamaan,
+          sharing_session: values.keaktifan_sharing_session,
+        },
+        pengetahuan: {
+          id: selectedRow.nilai_pengetahuan_id,
+          pengetahuan: values.pengetahuan,
+        },
+        action: {
+          id: selectedRow.nilai_action_id,
+          agility: values.action_agility,
+          customer_centric: values.action_customer_centric,
+          innovation: values.action_innovation,
+          open_mindset: values.action_open_mindset,
+          networking: values.action_networking,
+        },
+      },
+    };
+
+    let status = null;
+
+    serviceKaryawan
+      .editPenilaian(access_token.token, params)
+      .then((res) => {
+        toast.current.show({
+          severity: res.status === 202 ? "success" : "warn",
+          summary: res.status === 202 ? "Berhasil Mengubah Nilai" : "Gagal Mengubah Data Nilai",
+          detail: res.data.message,
+          life: 3000,
+        });
+        status = res.status;
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setHeaderDialog("");
+        setVisibleDialog(false);
+        formik.resetForm();
+        setPageLoading(false);
+        if (status === 202) {
+          getAllPenilaian();
+        }
+      });
+  };
+
+  const handleConfirmDialog = async () => {
+    setPageLoading(true);
+    const dataId = [selectedRow.nilai_absensi_id, selectedRow.nilai_action_id, selectedRow.nilai_keaktifan_id, selectedRow.nilai_pengetahuan_id];
+
+    let status = null;
+    let message = null;
+
+    for (const id of dataId || []) {
+      await serviceKaryawan
+        .deletePenilaian(access_token.token, { id })
+        .then((res) => {
+          status = res.status;
+          message = res.data.message;
+        })
+        .catch((error) => {
+          toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+        });
+    }
+
+    toast.current.show({
+      severity: status === 200 ? "success" : "warn",
+      summary: status === 200 ? "Berhasil Menghapus Nilai" : "Gagal Menghapus Data Nilai",
+      detail: message,
+      life: 3000,
+    });
+    setPageLoading(false);
+    if (status === 200) {
+      getAllPenilaian();
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -266,7 +377,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
   // TEMPLATE
   const actionBodyTemplate = (rowData) => (
     <>
-      <Menu model={menuItems} popup ref={actionMenu} id="action-menu" className={style["action-menu"]} onHide={() => setSelectedRow(null)} />
+      <Menu model={menuItems} popup ref={actionMenu} id="action-menu" className={style["action-menu"]} />
       <button className={style["button-action"]} onClick={(e) => handleActionClick(e, rowData)}>
         <i className="pi pi-ellipsis-v"></i>
       </button>
@@ -311,9 +422,13 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
   );
 
   useEffect(() => {
-    getTipeKaryawan();
+    getAllPenilaian();
     getSection();
   }, []);
+
+  useEffect(() => {
+    getAllPenilaian();
+  }, [lazyParams]);
 
   return (
     <>
@@ -421,6 +536,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
         </Content>
       </AppContext.Provider>
       <Toast ref={toast} />
+      <Loading visible={pageLoading} />
       <ConfirmDialog
         visible={visibleConfirmDialog}
         onHide={() => setVisibleConfirmDialog(false)}

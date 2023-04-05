@@ -12,7 +12,13 @@ export default function Sidebar({ visible, setVisible }) {
   const activePage = `/${page.match(REGEX)[1]}`;
   return (
     <div className={`${style["sidebar"]} ${visible ? "" : style["hide"]}`}>
-      <button className={style["toggle-sidebar"]} onClick={() => setVisible((prev) => (prev ? false : true))}>
+      <button
+        className={style["toggle-sidebar"]}
+        onClick={() => {
+          setVisible((prev) => (prev ? false : true));
+          localStorage.setItem("sidebar", visible ? "false" : "true");
+        }}
+      >
         <i className={`pi ${visible ? "pi-chevron-left" : "pi-chevron-right"}`}></i>
       </button>
       <div className={style["logo-telkomsel"]}>

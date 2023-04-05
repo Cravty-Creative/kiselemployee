@@ -17,6 +17,11 @@
  gap: 0.5rem;
 }
 
+.field-wrapper > label {
+  font-weight: 500;
+  font-size: 14px;
+}
+
 .dropdown-option {
  font-size: 14px;
 }
@@ -54,10 +59,13 @@
  font-weight: 600;
  font-size: 20px;
  color: #252525;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
 }
 
 .list-ranking {
- padding: 1.5rem;
+ padding: 1rem 1.5rem;
  display: flex;
  align-items: center;
  justify-content: space-between;
@@ -68,7 +76,7 @@
 .title-wrapper {
  display: flex;
  align-items: center;
- gap: 1rem;
+ gap: 2rem;
 }
 
 .title1 {
@@ -95,13 +103,29 @@
 .title2 {
  padding: 0.4rem 0.8rem;
  border-radius: 10px;
- border: 1px solid red;
  background-color: #ffefef;
  color: #ff4141;
  font-weight: 500;
+ font-size: 12px;
+}
+
+.title2.secondary {
+ background-color: #fff9df;
+ color: #cec000;
 }
 
 .ranking-nilai {
  font-weight: 600;
  font-size: 22px;
+}
+
+.nilai-title {
+  font-size: 12px;
+  color: #9b9a9a;
+}
+
+.ranking-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }

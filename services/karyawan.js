@@ -63,3 +63,39 @@ export const getDropdownKaryawan = async (accessToken) => {
     Authorization: `Bearer ${accessToken}`,
   });
 };
+
+export const getAllPenilaian = async (accessToken, data) => {
+  return await httpCall("POST", API.BASE_URL + API.NILAI_GET_ALL, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
+
+export const editPenilaian = async (accessToken, data) => {
+  return await httpCall("PUT", API.BASE_URL + API.NILAI_EDIT, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
+
+export const deletePenilaian = async (accessToken, data) => {
+  return await httpCall("DELETE", API.BASE_URL + API.NILAI_DELETE, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
+
+export const addPenilaian = async (accessToken, data) => {
+  return await httpCall("POST", API.BASE_URL + API.NILAI_CREATE, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
+
+export const getAllPresensi = async (accessToken, data) => {
+  return await httpCall("POST", API.BASE_URL + API.PRESENSI_GET_ALL, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
+
+export const addPresensi = async (accessToken, data) => {
+  return await httpCall("POST", API.BASE_URL + API.PRESENSI_CREATE, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
