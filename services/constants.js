@@ -16,6 +16,8 @@ export const NILAI_DELETE = "/nilai/delete";
 export const NILAI_CREATE = "/nilai/create";
 export const PRESENSI_GET_ALL = "/presensi/getall";
 export const PRESENSI_CREATE = "/presensi/create";
+export const PRESENSI_EDIT = "/presensi/edit";
+export const PRESENSI_DELETE = "/presensi/delete";
 
 export const LIST_BULAN = [
   { label: "Januari", value: "January" },

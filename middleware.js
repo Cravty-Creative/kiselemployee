@@ -19,7 +19,9 @@ export async function middleware(req) {
     }
 
     const parsedAccessToken = JSON.parse(getDecrypt(accessToken));
-    if (accessMenu[parsedAccessToken.role].some((prefix) => pathname.startsWith(prefix)) === false) {
+    const urlPath = url.pathname.split('/').slice(0,2).join("/");
+    
+    if (accessMenu[parsedAccessToken.role].includes(urlPath) === false) {
       url.pathname = "/";
       return NextResponse.redirect(url);
     }

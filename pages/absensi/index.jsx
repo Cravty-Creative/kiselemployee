@@ -57,6 +57,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
   const [optionKaryawan, setOptionKaryawan] = useState([]);
   const [isHadirMasuk, setIsHadirMasuk] = useState("hadir");
   const [isHadirKeluar, setIsHadirKeluar] = useState("hadir");
+  const [isMasuk, setIsMasuk] = useState(true);
 
   const [dateFilter, setDateFilter] = useState([new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)]);
   const [dataAbsensi, setDataAbsensi] = useState([]);
@@ -68,26 +69,27 @@ export default function Absensi({ access_token, menu = [], activePage }) {
   });
 
   const setFormDialog = () => {
-    const selectedAbsen = dataAbsensi.filter((item) => item.tgl_absen === selectedRow.tgl_absen);
-    const dataMasuk = selectedAbsen.filter((item) => item.tipe_absen === "Masuk")[0];
-    const dataPulang = selectedAbsen.filter((item) => item.tipe_absen === "Pulang")[0];
+    const isAbsensiMasuk = selectedRow.tipe_absen.toLowerCase() === "masuk";
+    setIsMasuk(isAbsensiMasuk);
 
     formik.setFieldValue("user_id", selectedRow.user_id);
-    formik.setFieldValue("tgl_absen", selectedRow.tgl_absen);
-    if (dataMasuk.status === "Hadir" && dataMasuk.jam) {
-      setIsHadirMasuk("hadir");
-      formik.setFieldValue("jam_masuk", new Date(`1999/01/17 ${dataMasuk.jam}`));
+    formik.setFieldValue("tgl_absen", new Date(selectedRow.tgl_absen));
+    if (isAbsensiMasuk) {
+      if (selectedRow.status === "Hadir" && selectedRow.jam) {
+        setIsHadirMasuk("hadir");
+        formik.setFieldValue("jam_masuk", new Date(`2023/03/17 ${selectedRow.jam}`));
+      } else {
+        setIsHadirMasuk("tidak_hadir");
+        formik.setFieldValue("status_masuk", selectedRow.status);
+      }
     } else {
-      setIsHadirMasuk("tidak_hadir");
-      formik.setFieldValue("status_masuk", dataMasuk.status);
-    }
-
-    if (dataPulang.status === "Hadir" && dataPulang.jam) {
-      setIsHadirKeluar("hadir");
-      formik.setFieldValue("jam_pulang", new Date(`1999/01/17 ${dataPulang.jam}`));
-    } else {
-      setIsHadirKeluar("tidak_hadir");
-      formik.setFieldValue("status_pulang", dataPulang.status);
+      if (selectedRow.status === "Hadir" && selectedRow.jam) {
+        setIsHadirKeluar("hadir");
+        formik.setFieldValue("jam_pulang", new Date(`2023/03/17 ${selectedRow.jam}`));
+      } else {
+        setIsHadirKeluar("tidak_hadir");
+        formik.setFieldValue("status_pulang", selectedRow.status);
+      }
     }
   };
 
@@ -143,6 +145,47 @@ export default function Absensi({ access_token, menu = [], activePage }) {
     return new Date(date).toLocaleTimeString("en-us", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
   };
 
+  const penentuanSkor = (tipeAbsen, values) => {
+    if (tipeAbsen === "masuk") {
+      // Penentuan SKOR Masuk
+      if (values.status_masuk === "Alfa") {
+        return 1;
+      } else if (values.status_masuk === "Sakit" || values.status_masuk === "Izin") {
+        return 2;
+      } else {
+        const jamMasuk = new Date(values.jam_masuk);
+        if (jamMasuk > new Date(`${formatDate(values.jam_masuk, true)} 09:00:00`.replace(/-/g, "/"))) {
+          return 3;
+        } else if (
+          jamMasuk >= new Date(`${formatDate(values.jam_masuk, true)} 08:00:00`.replace(/-/g, "/")) &&
+          jamMasuk <= new Date(`${formatDate(values.jam_masuk, true)} 09:00:00`.replace(/-/g, "/"))
+        ) {
+          return 4;
+        } else if (jamMasuk < new Date(`${formatDate(values.jam_masuk, true)} 08:00:00`.replace(/-/g, "/"))) {
+          return 5;
+        }
+      }
+    } else {
+      if (values.status_pulang === "Alfa") {
+        return 1;
+      } else if (values.status_pulang === "Sakit" || values.status_pulang === "Izin") {
+        return 2;
+      } else {
+        const jamPulang = new Date(values.jam_pulang);
+        if (jamPulang < new Date(`${formatDate(values.jam_pulang, true)} 16:00:00`.replace(/-/g, "/"))) {
+          return 3;
+        } else if (
+          jamPulang >= new Date(`${formatDate(values.jam_pulang, true)} 16:00:00`.replace(/-/g, "/")) &&
+          jamPulang <= new Date(`${formatDate(values.jam_pulang, true)} 17:00:00`.replace(/-/g, "/"))
+        ) {
+          return 4;
+        } else if (jamPulang > new Date(`${formatDate(values.jam_pulang, true)} 17:00:00`.replace(/-/g, "/"))) {
+          return 5;
+        }
+      }
+    }
+  };
+
   // HTTP/API CALL
   const getSection = () => {
     if (optionSection.length > 0) return;
@@ -196,12 +239,21 @@ export default function Absensi({ access_token, menu = [], activePage }) {
         if (res.status !== 200) {
           toast.current.show({ severity: "warn", summary: "Gagal Mendapatkan Data Absensi", detail: res.data.message, life: 3000 });
         } else {
+          const sortedAbsensi = res.data.data.sort((a, b) => {
+            if (Date.parse(a.tgl_absen) < Date.parse(b.tgl_absen)) return -1;
+            if (Date.parse(a.tgl_absen) > Date.parse(b.tgl_absen)) return 1;
+            if (a.nama < b.nama) return -1;
+            if (a.nama > b.nama) return 1;
+            if (a.user_id < b.user_id) return -1;
+            if (a.user_id > b.user_id) return 1;
+          });
+
           let dataTemp = [];
 
-          for (let i = 0; i < res.data.data.length; i++) {
+          for (let i = 0; i < sortedAbsensi.length; i++) {
             dataTemp.push({
               no: lazyParams.first + i + 1,
-              ...res.data.data[i],
+              ...sortedAbsensi[i],
             });
           }
 
@@ -218,23 +270,9 @@ export default function Absensi({ access_token, menu = [], activePage }) {
   };
 
   const handleAdd = (values) => {
-    // setPageLoading(true)
-    let skor_masuk = 1;
-    let skor_pulang = 1;
-
-    // Penentuan SKOR
-    if (values.status_masuk === "Alfa") {
-      skor_masuk = 1;
-    } else if (values.status_masuk === "Sakit" || values.status_masuk === "Izin") {
-      skor_masuk = 2;
-    } else {
-      const jamMasuk = Number(formatTime(values.jam_masuk).split(":")[0]);
-      if (jamMasuk > 9) {
-        skor_masuk = 3;
-      } else if (jamMasuk > 9) {
-
-      }
-    }
+    setPageLoading(true);
+    let skor_masuk = penentuanSkor("masuk", values);
+    let skor_pulang = penentuanSkor("pulang", values);
 
     let params = {
       user_id: values.user_id,
@@ -246,12 +284,64 @@ export default function Absensi({ access_token, menu = [], activePage }) {
       skor_pulang,
       status_pulang: values.status_pulang,
     };
-    console.log(params);
+
+    serviceKaryawan
+      .addPresensi(access_token.token, params)
+      .then((res) => {
+        toast.current.show({ severity: res.status !== 201 ? "warn" : "success", summary: res.status !== 201 ? "Gagal" : "Berhasil", detail: res.data.message, life: 3000 });
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setPageLoading(false);
+        getAllAbsensi();
+      });
   };
 
-  const handleEdit = (values) => { };
+  const handleEdit = (values) => {
+    // setPageLoading(true);
+    let tipe = selectedRow.tipe_absen.toLowerCase();
 
-  const handleConfirmDialog = () => { };
+    let params = {
+      id: selectedRow.id,
+      user_id: selectedRow.user_id,
+      tgl_absen: selectedRow.tgl_absen,
+      jam: values["status_" + tipe] === "Hadir" ? formatTime(values["jam_" + tipe]) : null,
+      skor: penentuanSkor(tipe, values),
+      status: values["status_" + tipe],
+    };
+
+    // serviceKaryawan
+    //   .editPresensi(access_token.token, params)
+    //   .then((res) => {
+    //     toast.current.show({ severity: res.status !== 202 ? "warn" : "success", summary: res.status !== 202 ? "Gagal" : "Berhasil", detail: res.data.message, life: 3000 });
+    //   })
+    //   .catch((error) => {
+    //     toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+    //   })
+    //   .finally(() => {
+    //     setPageLoading(false);
+    //     getAllAbsensi();
+    //   });
+  };
+
+  const handleConfirmDialog = () => {
+    setPageLoading(true);
+
+    serviceKaryawan
+      .deletePresensi(access_token.token, { id: selectedRow.id })
+      .then((res) => {
+        toast.current.show({ severity: res.status !== 200 ? "warn" : "success", summary: res.status !== 200 ? "Gagal" : "Berhasil", detail: res.data.message, life: 3000 });
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setPageLoading(false);
+        getAllAbsensi();
+      });
+  };
 
   const handleActionClick = (event, rowData) => {
     actionMenu.current.toggle(event);
@@ -284,7 +374,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
   // TEMPLATE
   const actionBodyTemplate = (rowData) => (
     <>
-      <Menu model={menuItems} popup ref={actionMenu} id="action-menu" className={style["action-menu"]} onHide={() => setSelectedRow(null)} />
+      <Menu model={menuItems} popup ref={actionMenu} id="action-menu" className={style["action-menu"]} />
       <button className={style["button-action"]} onClick={(e) => handleActionClick(e, rowData)}>
         <i className="pi pi-ellipsis-v"></i>
       </button>
@@ -293,6 +383,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
 
   const noBodyTemplate = (rowData) => <span>{rowData.no}</span>;
   const namaBodyTemplate = (rowData) => <span>{rowData.nama}</span>;
+  const tanggalBodyTemplate = (rowData) => <span>{rowData.tgl_absen}</span>;
 
   const isFieldError = (name) => {
     return formik.touched[name] && Boolean(formik.errors[name]);
@@ -368,20 +459,15 @@ export default function Absensi({ access_token, menu = [], activePage }) {
                 </div>
               </div>
             </div>
-            <div className={style["search-field-wrapper"]}>
-              <span className="p-input-icon-left">
-                <i className="pi pi-search" />
-                <InputText value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search" className={`p-inputtext-sm ${style["search-field"]}`} />
-              </span>
-              <Button
-                className={style["button-search"]}
-                onClick={() => {
-                  getAllAbsensi();
-                }}
-              >
-                <i className="pi pi-search"></i>
-              </Button>
-            </div>
+            <Button
+              className={style["button-search"]}
+              onClick={() => {
+                getAllAbsensi();
+              }}
+            >
+              <i className="pi pi-search"></i>
+              <span>Search</span>
+            </Button>
           </div>
           <div className={style["table-wrapper"]}>
             <DataTable
@@ -404,19 +490,14 @@ export default function Absensi({ access_token, menu = [], activePage }) {
               showGridlines
               size="small"
               tableClassName={style["table-data-absensi"]}
-              rowGroupMode="rowspan"
-              groupRowsBy="tgl_absen"
-              sortMode="single"
-              sortField="tgl_absen"
-              sortOrder={1}
             >
-              <Column field="tgl_absen" header="No" className={style["no-column"]} style={{ textAlign: "center" }} body={noBodyTemplate}></Column>
-              <Column field="tgl_absen" header="Nama Lengkap" body={namaBodyTemplate}></Column>
+              <Column field="no" header="No" className={style["no-column"]} style={{ textAlign: "center" }}></Column>
+              <Column field="nama" header="Nama Lengkap"></Column>
               <Column field="tgl_absen" header="Tanggal"></Column>
               <Column field="tipe_absen" header="Tipe Absen" style={{ textAlign: "center" }}></Column>
               <Column field="jam" header="Jam Absen" style={{ textAlign: "center" }} body={(e) => e.jam || "-"}></Column>
               <Column field="status" header="Status" style={{ textAlign: "center" }}></Column>
-              <Column field="tgl_absen" header="Action" style={{ width: "6%", textAlign: "center" }} className={style["action-column"]} body={actionBodyTemplate}></Column>
+              <Column header="Action" style={{ width: "6%", textAlign: "center" }} className={style["action-column"]} body={actionBodyTemplate}></Column>
             </DataTable>
           </div>
         </Content>
@@ -439,6 +520,8 @@ export default function Absensi({ access_token, menu = [], activePage }) {
         onHide={() => {
           setVisibleDialog(false);
           formik.handleReset();
+          formik.setFieldValue("jam_masuk", new Date("2023-03-17 08:00:00".replace(/-/g, "/")));
+          formik.setFieldValue("jam_pulang", new Date("2023-03-17 17:00:00".replace(/-/g, "/")));
           setIsHadirMasuk("hadir");
           setIsHadirKeluar("hadir");
         }}
@@ -451,7 +534,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
             <Dropdown
               id="user_id"
               name="user_id"
-              disabled={loadingKaryawan || tipeDialog === "Detail"}
+              disabled={loadingKaryawan || tipeDialog !== "Tambah"}
               options={optionKaryawan}
               value={formik.values["user_id"]}
               onChange={formik.handleChange}
@@ -475,161 +558,167 @@ export default function Absensi({ access_token, menu = [], activePage }) {
               onChange={formik.handleChange}
               dateFormat="dd/mm/yy"
               readOnlyInput
-              disabled={tipeDialog === "Detail"}
+              disabled={tipeDialog !== "Tambah"}
             />
             {getErrorMessage("tgl_absen")}
           </div>
           <div className={style["detail-absen-wrapper"]}>
-            <div className={style["col-6"]}>
-              <span className={style["title-detail-absen"]}>Absensi Masuk</span>
-              <div className={style["is-hadir-body"]}>
-                <div className={style["is-hadir-wrapper"]}>
-                  <RadioButton
-                    inputId="is_hadir_masuk1"
-                    name="is_hadir_masuk1"
-                    value="hadir"
-                    onChange={(e) => {
-                      setIsHadirMasuk(e.value);
-                      setIsHadirKeluar(e.value);
-                      formik.setFieldValue("status_masuk", "Hadir");
-                      formik.setFieldValue("status_pulang", "Hadir");
-                      formik.setFieldValue("jam_pulang", new Date("2023-03-17 17:00:00".replace(/-/g, "/")));
-                    }}
-                    checked={isHadirMasuk === "hadir"}
-                    disabled={tipeDialog === "Detail"}
-                  />
-                  <label htmlFor="is_hadir_masuk1">Hadir</label>
+            {(tipeDialog === "Tambah" || ((tipeDialog === "Edit" || tipeDialog === "Detail") && isMasuk)) && (
+              <div className={style["col-6"]}>
+                <span className={style["title-detail-absen"]}>Absensi Masuk</span>
+                <div className={style["is-hadir-body"]}>
+                  <div className={style["is-hadir-wrapper"]}>
+                    <RadioButton
+                      inputId="is_hadir_masuk1"
+                      name="is_hadir_masuk1"
+                      value="hadir"
+                      onChange={(e) => {
+                        setIsHadirMasuk(e.value);
+                        setIsHadirKeluar(e.value);
+                        formik.setFieldValue("status_masuk", "Hadir");
+                        formik.setFieldValue("status_pulang", "Hadir");
+                        formik.setFieldValue("jam_pulang", new Date("2023-03-17 17:00:00".replace(/-/g, "/")));
+                      }}
+                      checked={isHadirMasuk === "hadir"}
+                      disabled={tipeDialog === "Detail"}
+                    />
+                    <label htmlFor="is_hadir_masuk1">Hadir</label>
+                  </div>
+                  <div className={style["is-hadir-wrapper"]}>
+                    <RadioButton
+                      inputId="is_hadir_masuk2"
+                      name="is_hadir_masuk2"
+                      value="tidak_hadir"
+                      onChange={(e) => {
+                        setIsHadirMasuk(e.value);
+                        setIsHadirKeluar(e.value);
+                        formik.setFieldValue("status_masuk", "Alfa");
+                        formik.setFieldValue("status_pulang", "Alfa");
+                        formik.setFieldValue("jam_pulang", "");
+                      }}
+                      checked={isHadirMasuk === "tidak_hadir"}
+                      disabled={tipeDialog === "Detail"}
+                    />
+                    <label htmlFor="is_hadir_masuk2">Tidak Hadir</label>
+                  </div>
                 </div>
-                <div className={style["is-hadir-wrapper"]}>
-                  <RadioButton
-                    inputId="is_hadir_masuk2"
-                    name="is_hadir_masuk2"
-                    value="tidak_hadir"
-                    onChange={(e) => {
-                      setIsHadirMasuk(e.value);
-                      setIsHadirKeluar(e.value);
-                      formik.setFieldValue("status_masuk", "Alfa");
-                      formik.setFieldValue("status_pulang", "Alfa");
-                      formik.setFieldValue("jam_pulang", "");
-                    }}
-                    checked={isHadirMasuk === "tidak_hadir"}
-                    disabled={tipeDialog === "Detail"}
-                  />
-                  <label htmlFor="is_hadir_masuk2">Tidak Hadir</label>
-                </div>
+                {isHadirMasuk === "hadir" ? (
+                  <div className={style["field-wrapper"]}>
+                    <label htmlFor="jam_masuk">Jam Absensi</label>
+                    <Calendar
+                      id="jam_masuk"
+                      name="jam_masuk"
+                      placeholder="pilih jam masuk"
+                      panelClassName={style["dropdown-option"]}
+                      className={classNames(`${style["dropdown"]} ${style["periode-absen"]}`)}
+                      value={formik.values["jam_masuk"]}
+                      onChange={formik.handleChange}
+                      timeOnly
+                      disabled={tipeDialog === "Detail"}
+                    />
+                    {getErrorMessage("jam_masuk")}
+                  </div>
+                ) : (
+                  <div className={style["field-wrapper"]}>
+                    <label htmlFor="status_masuk">Alasan Tidak Hadir</label>
+                    <Dropdown
+                      id="status_masuk"
+                      name="status_masuk"
+                      options={[{ value: "Sakit" }, { value: "Izin" }, { value: "Alfa" }]}
+                      value={formik.values["status_masuk"]}
+                      onChange={(e) => {
+                        formik.handleChange(e);
+                        formik.setFieldValue("status_pulang", e.value);
+                      }}
+                      placeholder="pilih alasan tidak hadir"
+                      optionLabel="value"
+                      panelClassName={style["dropdown-option"]}
+                      className={classNames(style["dropdown"], { "p-invalid": isFieldError("status_masuk") })}
+                      disabled={tipeDialog === "Detail"}
+                    />
+                    {getErrorMessage("status_masuk")}
+                  </div>
+                )}
               </div>
-              {isHadirMasuk === "hadir" ? (
-                <div className={style["field-wrapper"]}>
-                  <label htmlFor="jam_masuk">Jam Absensi</label>
-                  <Calendar
-                    id="jam_masuk"
-                    name="jam_masuk"
-                    placeholder="pilih jam masuk"
-                    panelClassName={style["dropdown-option"]}
-                    className={classNames(`${style["dropdown"]} ${style["periode-absen"]}`)}
-                    value={formik.values["jam_masuk"]}
-                    onChange={formik.handleChange}
-                    timeOnly
-                    disabled={tipeDialog === "Detail"}
-                  />
-                  {getErrorMessage("jam_masuk")}
+            )}
+            {tipeDialog === "Tambah" && <Divider layout="vertical" />}
+            {(tipeDialog === "Tambah" || ((tipeDialog === "Edit" || tipeDialog === "Detail") && !isMasuk)) && (
+              <div className={`${style["col-6"]} ${isHadirMasuk === "tidak_hadir" ? style["disable-hadir-pulang"] : ""}`}>
+                <span className={style["title-detail-absen"]}>Absensi Pulang</span>
+                <div className={style["is-hadir-body"]}>
+                  <div className={style["is-hadir-wrapper"]}>
+                    <RadioButton
+                      inputId="is_hadir_pulang1"
+                      name="is_hadir_pulang1"
+                      value="hadir"
+                      disabled={isHadirMasuk === "tidak_hadir" || tipeDialog === "Detail"}
+                      onChange={(e) => {
+                        setIsHadirKeluar(e.value);
+                        formik.setFieldValue("status_pulang", "Hadir");
+                      }}
+                      checked={isHadirKeluar === "hadir"}
+                    />
+                    <label htmlFor="is_hadir_pulang1">Hadir</label>
+                  </div>
+                  <div className={style["is-hadir-wrapper"]}>
+                    <RadioButton
+                      inputId="is_hadir_pulang2"
+                      name="is_hadir_pulang2"
+                      value="tidak_hadir"
+                      disabled={isHadirMasuk === "tidak_hadir" || tipeDialog === "Detail"}
+                      onChange={(e) => {
+                        setIsHadirKeluar(e.value);
+                        formik.setFieldValue("status_pulang", "Alfa");
+                      }}
+                      checked={isHadirKeluar === "tidak_hadir"}
+                    />
+                    <label htmlFor="is_hadir_pulang2">Tidak Hadir</label>
+                  </div>
                 </div>
-              ) : (
-                <div className={style["field-wrapper"]}>
-                  <label htmlFor="status_masuk">Alasan Tidak Hadir</label>
-                  <Dropdown
-                    id="status_masuk"
-                    name="status_masuk"
-                    options={[{ value: "Sakit" }, { value: "Izin" }, { value: "Alfa" }]}
-                    value={formik.values["status_masuk"]}
-                    onChange={(e) => {
-                      formik.handleChange(e);
-                      formik.setFieldValue("status_pulang", e.value);
-                    }}
-                    placeholder="pilih alasan tidak hadir"
-                    optionLabel="value"
-                    panelClassName={style["dropdown-option"]}
-                    className={classNames(style["dropdown"], { "p-invalid": isFieldError("status_masuk") })}
-                    disabled={tipeDialog === "Detail"}
-                  />
-                  {getErrorMessage("status_masuk")}
-                </div>
-              )}
-            </div>
-            <Divider layout="vertical" />
-            <div className={`${style["col-6"]} ${isHadirMasuk === "tidak_hadir" ? style["disable-hadir-pulang"] : ""}`}>
-              <span className={style["title-detail-absen"]}>Absensi Pulang</span>
-              <div className={style["is-hadir-body"]}>
-                <div className={style["is-hadir-wrapper"]}>
-                  <RadioButton
-                    inputId="is_hadir_pulang1"
-                    name="is_hadir_pulang1"
-                    value="hadir"
-                    disabled={isHadirMasuk === "tidak_hadir" || tipeDialog === "Detail"}
-                    onChange={(e) => {
-                      setIsHadirKeluar(e.value);
-                      formik.setFieldValue("status_pulang", "Hadir");
-                    }}
-                    checked={isHadirKeluar === "hadir"}
-                  />
-                  <label htmlFor="is_hadir_pulang1">Hadir</label>
-                </div>
-                <div className={style["is-hadir-wrapper"]}>
-                  <RadioButton
-                    inputId="is_hadir_pulang2"
-                    name="is_hadir_pulang2"
-                    value="tidak_hadir"
-                    disabled={isHadirMasuk === "tidak_hadir" || tipeDialog === "Detail"}
-                    onChange={(e) => {
-                      setIsHadirKeluar(e.value);
-                      formik.setFieldValue("status_pulang", "Alfa");
-                    }}
-                    checked={isHadirKeluar === "tidak_hadir"}
-                  />
-                  <label htmlFor="is_hadir_pulang2">Tidak Hadir</label>
-                </div>
+                {isHadirKeluar === "hadir" ? (
+                  <div className={style["field-wrapper"]}>
+                    <label htmlFor="jam_pulang">Jam Absensi</label>
+                    <Calendar
+                      id="jam_pulang"
+                      name="jam_pulang"
+                      placeholder="pilih jam pulang"
+                      disabled={isHadirMasuk === "tidak_hadir" || tipeDialog === "Detail"}
+                      panelClassName={style["dropdown-option"]}
+                      className={classNames(`${style["dropdown"]} ${style["periode-absen"]}`)}
+                      value={formik.values["jam_pulang"]}
+                      onChange={formik.handleChange}
+                      timeOnly
+                    />
+                    {getErrorMessage("jam_pulang")}
+                  </div>
+                ) : (
+                  <div className={style["field-wrapper"]}>
+                    <label htmlFor="status_pulang">Alasan Tidak Hadir</label>
+                    <Dropdown
+                      id="status_pulang"
+                      name="status_pulang"
+                      options={[{ value: "Sakit" }, { value: "Izin" }, { value: "Alfa" }]}
+                      value={formik.values["status_pulang"]}
+                      disabled={isHadirMasuk === "tidak_hadir" || tipeDialog === "Detail"}
+                      onChange={formik.handleChange}
+                      placeholder="pilih alasan tidak hadir"
+                      optionLabel="value"
+                      panelClassName={style["dropdown-option"]}
+                      className={classNames(style["dropdown"], { "p-invalid": isFieldError("status_pulang") })}
+                    />
+                    {getErrorMessage("status_pulang")}
+                  </div>
+                )}
               </div>
-              {isHadirKeluar === "hadir" ? (
-                <div className={style["field-wrapper"]}>
-                  <label htmlFor="jam_pulang">Jam Absensi</label>
-                  <Calendar
-                    id="jam_pulang"
-                    name="jam_pulang"
-                    placeholder="pilih jam pulang"
-                    disabled={isHadirMasuk === "tidak_hadir" || tipeDialog === "Detail"}
-                    panelClassName={style["dropdown-option"]}
-                    className={classNames(`${style["dropdown"]} ${style["periode-absen"]}`)}
-                    value={formik.values["jam_pulang"]}
-                    onChange={formik.handleChange}
-                    timeOnly
-                  />
-                  {getErrorMessage("jam_pulang")}
-                </div>
-              ) : (
-                <div className={style["field-wrapper"]}>
-                  <label htmlFor="status_pulang">Alasan Tidak Hadir</label>
-                  <Dropdown
-                    id="status_pulang"
-                    name="status_pulang"
-                    options={[{ value: "Sakit" }, { value: "Izin" }, { value: "Alfa" }]}
-                    value={formik.values["status_pulang"]}
-                    disabled={isHadirMasuk === "tidak_hadir" || tipeDialog === "Detail"}
-                    onChange={formik.handleChange}
-                    placeholder="pilih alasan tidak hadir"
-                    optionLabel="value"
-                    panelClassName={style["dropdown-option"]}
-                    className={classNames(style["dropdown"], { "p-invalid": isFieldError("status_pulang") })}
-                  />
-                  {getErrorMessage("status_pulang")}
-                </div>
-              )}
-            </div>
+            )}
           </div>
           <div className={style["form-btn-group"]}>
             <Button
               onClick={() => {
                 setVisibleDialog(false);
                 formik.handleReset();
+                formik.setFieldValue("jam_masuk", new Date("2023-03-17 08:00:00".replace(/-/g, "/")));
+                formik.setFieldValue("jam_pulang", new Date("2023-03-17 17:00:00".replace(/-/g, "/")));
                 setIsHadirMasuk("hadir");
                 setIsHadirKeluar("hadir");
               }}
@@ -639,7 +728,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
               {tipeDialog === "Detail" ? "Tutup" : "Batal"}
             </Button>
             {tipeDialog !== "Detail" && (
-              <Button onClick={() => { }} type="submit">
+              <Button onClick={() => {}} type="submit">
                 Simpan
               </Button>
             )}

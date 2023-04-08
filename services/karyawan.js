@@ -99,3 +99,15 @@ export const addPresensi = async (accessToken, data) => {
     Authorization: `Bearer ${accessToken}`,
   });
 };
+
+export const editPresensi = async (accessToken, data) => {
+  return await httpCall("PUT", API.BASE_URL + API.PRESENSI_EDIT, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
+
+export const deletePresensi = async (accessToken, data) => {
+  return await httpCall("DELETE", API.BASE_URL + API.PRESENSI_DELETE, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
