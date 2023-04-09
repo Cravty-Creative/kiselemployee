@@ -37,6 +37,9 @@
 .list-section-1 > .last-updated {
   font-size: 12px;
   color: #878787;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
 }
 
 .header-ranking {
@@ -54,8 +57,23 @@
   justify-content: space-between;
   background-color: white;
   border-radius: 10px;
-  max-width: 40rem;
+  max-width: 60rem;
  }
+
+.list-ranking[ranking="1"] {
+  border: 2px solid #FFD93D;
+  background-color: #fefbf0;
+}
+
+.list-ranking[ranking="2"] {
+  border: 2px solid #ffc2c2;
+  background-color: #feeded;
+}
+
+.list-ranking[ranking="3"] {
+  border: 2px solid #E4DCCF;
+  background-color: rgb(255, 253, 248)
+}
  
  .title-wrapper {
   display: flex;
@@ -71,7 +89,7 @@
  .ranking-no {
   font-size: 20px;
   font-weight: 600;
-  margin-right: 1rem;
+  /* margin-right: 1rem; */
  }
  
  .ranking-nama {
@@ -114,4 +132,14 @@
   flex-direction: column;
   gap: 1rem;
   margin-top: 1.5rem;
+}
+
+.no-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+  padding: 1rem;
+  color: #878787;
 }

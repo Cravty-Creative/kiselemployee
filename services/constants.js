@@ -18,6 +18,8 @@ export const PRESENSI_GET_ALL = "/presensi/getall";
 export const PRESENSI_CREATE = "/presensi/create";
 export const PRESENSI_EDIT = "/presensi/edit";
 export const PRESENSI_DELETE = "/presensi/delete";
+export const DASHBOARD_GET_COUNT_USER = "/dashboard/getusercount";
+export const RANKING = "/rating";
 
 export const LIST_BULAN = [
   { label: "Januari", value: "January" },

@@ -52,7 +52,7 @@ const validationSchema = yup.object().shape({
   pekerjaan: yup.string().min(3, "minimal 3 karakter").required("masukan nama pekerjaan anda"),
 });
 
-export default function TambahUser({ access_token, menu = [], activePage, isDisable, userId }) {
+export default function DetailUser({ access_token, menu = [], activePage, isDisable, userId }) {
   const router = useRouter();
   const toast = useRef(null);
 

@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { getDecrypt } from "@/services/encryptDecrypt";
 import { AppContext } from "@/context";
+import * as serviceKaryawan from "@/services/karyawan.js";
 
 // Components
 import PageHeader from "@/components/PageHeader";
 import Content from "@/components/Content";
-import { Button } from "primereact/button";
+import { Skeleton } from "primereact/skeleton";
 
 // Style
 import style from "@/styles/dashboard.module.css";
@@ -20,41 +21,56 @@ export default function Home({ access_token, menu = [], activePage }) {
   const [dataJumlah, setDataJumlah] = useState([
     {
       title: "Jumlah Karyawan",
-      jumlah: 371,
-      last_updated: "2023-04-02",
+      jumlah: 0,
+      last_updated: "",
     },
     {
       title: "Jumlah Karyawan Inventory",
-      jumlah: 72,
-      last_updated: "2023-04-02",
+      jumlah: 0,
+      last_updated: "",
     },
     {
       title: "Jumlah Karyawan Distributor",
-      jumlah: 102,
-      last_updated: "2023-04-02",
+      jumlah: 0,
+      last_updated: "",
     },
   ]);
 
-  const [dataRanking, setDataRanking] = useState([
-    {
-      no: 1,
-      user_id: 2,
-      nama: "Aurelien",
-      tipe_karyawan: "Inventory",
-      job_title: "Programmer",
-      work_location: "Jakarta",
-      nilai: "0.886",
-    },
-    {
-      no: 2,
-      user_id: 3,
-      nama: "Alfiansyah",
-      tipe_karyawan: "Distributor",
-      job_title: "Admin Gudang",
-      work_location: "Bekasi",
-      nilai: "0.775",
-    },
-  ]);
+  const [dataRanking, setDataRanking] = useState([]);
+
+  // HTTP/API CALL
+  const getUserCount = () => {
+    serviceKaryawan.getUserCount(access_token.token).then((res) => {
+      if (res.status === 200) {
+        setDataJumlah(res.data.data);
+      }
+    });
+  };
+
+  const getRanking = () => {
+    let params = {
+      periode: `${new Date().getMonth()}/${new Date().getFullYear()}`,
+      tipe_karyawan: "",
+      user_id: "",
+      limit: 5,
+    };
+
+    serviceKaryawan.getRanking(access_token.token, params).then((res) => {
+      if (res.status === 200) {
+        let tempRank = [];
+        for (const key of Object.keys(res.data.ranking)) {
+          tempRank = [...tempRank, ...res.data.ranking[key]];
+        }
+        tempRank.sort((a, b) => b.nilai - a.nilai);
+        setDataRanking(tempRank);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getUserCount();
+    getRanking();
+  }, []);
 
   return (
     <>
@@ -65,8 +81,8 @@ export default function Home({ access_token, menu = [], activePage }) {
             {(dataJumlah || []).map((item, i) => (
               <div key={i} className={style["list-section-1"]}>
                 <span className={style["title"]}>{item.title ?? ""}</span>
-                <span className={style["jumlah"]}>{item.jumlah ?? ""}</span>
-                <span className={style["last-updated"]}>last updated at {item.last_updated}</span>
+                <span className={style["jumlah"]}>{item.jumlah || item.jumlah !== 0 ? item.jumlah : <Skeleton width="5rem" height="3rem" />}</span>
+                <span className={style["last-updated"]}>last updated at {item.last_updated ? item.last_updated : <Skeleton width="7rem" height="1rem" />}</span>
               </div>
             ))}
           </div>
@@ -79,16 +95,16 @@ export default function Home({ access_token, menu = [], activePage }) {
           <div className={style["ranking-wrapper"]}>
             {dataRanking.length ? (
               dataRanking.map((item, index) => (
-                <div key={index} className={style["list-ranking"]}>
+                <div key={index} className={style["list-ranking"]} ranking={index + 1}>
                   <div className={style["title-wrapper"]}>
-                    <span className={style["ranking-no"]}>{item.no}</span>
+                    <span className={style["ranking-no"]}>{index + 1}</span>
                     <div className={style["title1"]}>
-                      <span className={style["ranking-nama"]}>{item.nama}</span>
+                      <span className={style["ranking-nama"]}>{item.name}</span>
                       <span className={style["ranking-job"]}>
                         {item.job_title} - {item.work_location}
                       </span>
                     </div>
-                    <span className={`${style["title2"]} ${item.tipe_karyawan === "Distributor" ? style["secondary"] : ""}`}>{item.tipe_karyawan}</span>
+                    <span className={`${style["title2"]} ${item.type_id === "Distribution" ? style["secondary"] : ""}`}>{item.type_id}</span>
                   </div>
                   <div className={style["title-wrapper"]}>
                     <div className={style["title1"]}>
@@ -99,7 +115,7 @@ export default function Home({ access_token, menu = [], activePage }) {
                 </div>
               ))
             ) : (
-              <div>Tidak Ada Data</div>
+              <div className={style["no-data"]}>Tidak Ada Data</div>
             )}
           </div>
         </Content>

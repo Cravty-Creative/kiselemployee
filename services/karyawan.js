@@ -111,3 +111,15 @@ export const deletePresensi = async (accessToken, data) => {
     Authorization: `Bearer ${accessToken}`,
   });
 };
+
+export const getUserCount = async (accessToken) => {
+  return await httpCall("GET", API.BASE_URL + API.DASHBOARD_GET_COUNT_USER, null, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
+
+export const getRanking = async (accessToken, data) => {
+  return await httpCall("POST", API.BASE_URL + API.RANKING, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};

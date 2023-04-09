@@ -42,7 +42,7 @@ const validationSchema = yup.object().shape({
   action_networking: yup.number().required("wajib memilih action networking"),
 });
 
-export default function TambahUser({ access_token, menu = [], activePage }) {
+export default function PenilaianKaryawan({ access_token, menu = [], activePage }) {
   const actionMenu = useRef(null);
   const toast = useRef(null);
   const breadcrumb = [{ label: "Penilaian Karyawan", url: activePage }];

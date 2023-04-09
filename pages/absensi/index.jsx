@@ -186,6 +186,15 @@ export default function Absensi({ access_token, menu = [], activePage }) {
     }
   };
 
+  const onHideDialog = () => {
+    setVisibleDialog(false);
+    formik.handleReset();
+    formik.setFieldValue("jam_masuk", new Date("2023-03-17 08:00:00".replace(/-/g, "/")));
+    formik.setFieldValue("jam_pulang", new Date("2023-03-17 17:00:00".replace(/-/g, "/")));
+    setIsHadirMasuk("hadir");
+    setIsHadirKeluar("hadir");
+  };
+
   // HTTP/API CALL
   const getSection = () => {
     if (optionSection.length > 0) return;
@@ -294,36 +303,38 @@ export default function Absensi({ access_token, menu = [], activePage }) {
         toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
       })
       .finally(() => {
+        onHideDialog();
         setPageLoading(false);
         getAllAbsensi();
       });
   };
 
   const handleEdit = (values) => {
-    // setPageLoading(true);
+    setPageLoading(true);
     let tipe = selectedRow.tipe_absen.toLowerCase();
 
     let params = {
       id: selectedRow.id,
       user_id: selectedRow.user_id,
-      tgl_absen: selectedRow.tgl_absen,
+      tgl_absen: selectedRow.tgl_absen.split("-").reverse().join("-"),
       jam: values["status_" + tipe] === "Hadir" ? formatTime(values["jam_" + tipe]) : null,
       skor: penentuanSkor(tipe, values),
       status: values["status_" + tipe],
     };
 
-    // serviceKaryawan
-    //   .editPresensi(access_token.token, params)
-    //   .then((res) => {
-    //     toast.current.show({ severity: res.status !== 202 ? "warn" : "success", summary: res.status !== 202 ? "Gagal" : "Berhasil", detail: res.data.message, life: 3000 });
-    //   })
-    //   .catch((error) => {
-    //     toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
-    //   })
-    //   .finally(() => {
-    //     setPageLoading(false);
-    //     getAllAbsensi();
-    //   });
+    serviceKaryawan
+      .editPresensi(access_token.token, params)
+      .then((res) => {
+        toast.current.show({ severity: res.status !== 202 ? "warn" : "success", summary: res.status !== 202 ? "Gagal" : "Berhasil", detail: res.data.message, life: 3000 });
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        onHideDialog();
+        setPageLoading(false);
+        getAllAbsensi();
+      });
   };
 
   const handleConfirmDialog = () => {
@@ -380,10 +391,6 @@ export default function Absensi({ access_token, menu = [], activePage }) {
       </button>
     </>
   );
-
-  const noBodyTemplate = (rowData) => <span>{rowData.no}</span>;
-  const namaBodyTemplate = (rowData) => <span>{rowData.nama}</span>;
-  const tanggalBodyTemplate = (rowData) => <span>{rowData.tgl_absen}</span>;
 
   const isFieldError = (name) => {
     return formik.touched[name] && Boolean(formik.errors[name]);
@@ -514,20 +521,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
         dismissableMask
         reject={() => setVisibleConfirmDialog(false)}
       />
-      <Dialog
-        header={tipeDialog + " Absensi"}
-        visible={visibleDialog}
-        onHide={() => {
-          setVisibleDialog(false);
-          formik.handleReset();
-          formik.setFieldValue("jam_masuk", new Date("2023-03-17 08:00:00".replace(/-/g, "/")));
-          formik.setFieldValue("jam_pulang", new Date("2023-03-17 17:00:00".replace(/-/g, "/")));
-          setIsHadirMasuk("hadir");
-          setIsHadirKeluar("hadir");
-        }}
-        style={{ width: "50vw" }}
-        breakpoints={{ "960px": "75vw", "641px": "100vw" }}
-      >
+      <Dialog header={tipeDialog + " Absensi"} visible={visibleDialog} onHide={onHideDialog} style={{ width: "50vw" }} breakpoints={{ "960px": "75vw", "641px": "100vw" }}>
         <form className={style["form-wrapper"]} onSubmit={formik.handleSubmit}>
           <div className={style["field-wrapper"]}>
             <label htmlFor="user_id">Karyawan</label>
@@ -713,18 +707,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
             )}
           </div>
           <div className={style["form-btn-group"]}>
-            <Button
-              onClick={() => {
-                setVisibleDialog(false);
-                formik.handleReset();
-                formik.setFieldValue("jam_masuk", new Date("2023-03-17 08:00:00".replace(/-/g, "/")));
-                formik.setFieldValue("jam_pulang", new Date("2023-03-17 17:00:00".replace(/-/g, "/")));
-                setIsHadirMasuk("hadir");
-                setIsHadirKeluar("hadir");
-              }}
-              type="button"
-              secondary
-            >
+            <Button onClick={onHideDialog} type="button" secondary>
               {tipeDialog === "Detail" ? "Tutup" : "Batal"}
             </Button>
             {tipeDialog !== "Detail" && (
