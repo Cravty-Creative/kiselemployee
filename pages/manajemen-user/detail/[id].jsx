@@ -26,7 +26,7 @@ import Loading from "@/components/Loading";
 const validationSchema = yup.object().shape({
   nama_lengkap: yup.string().min(3, "minimal 3 karakter").required("masukan nama lengkap anda"),
   username: yup.string().min(4, "minimal 4 digit/karakter").required("masukan username atau NIK anda"),
-  // password: yup.string().min(6, "minimal 6 karakter").required("password harus diisi"),
+  password: yup.string().min(6, "minimal 6 karakter").required("password harus diisi"),
   // tipe_user: yup
   //   .string()
   //   .required("pilih salah satu tipe user")
@@ -107,6 +107,7 @@ export default function DetailUser({ access_token, menu = [], activePage, isDisa
           formUser.setValues({
             nama_lengkap: dt.name || "",
             username: dt.username || "",
+            password: dt.password || "",
             tipe_karyawan: dt.type_id || "",
             section: dt.section || "",
             lokasi_kerja: dt.work_location || "",
@@ -134,6 +135,8 @@ export default function DetailUser({ access_token, menu = [], activePage, isDisa
       type_id: formUser.values.tipe_karyawan,
       name: formUser.values.nama_lengkap,
       section: formUser.values.section,
+      username: formUser.values.username,
+      password: formUser.values.password,
       work_location: formUser.values.lokasi_kerja,
       job_title: formUser.values.pekerjaan,
       spv1_name: formUser.values.spv1,
@@ -198,6 +201,7 @@ export default function DetailUser({ access_token, menu = [], activePage, isDisa
     initialValues: {
       nama_lengkap: "",
       username: "",
+      password: "",
       tipe_karyawan: "",
       section: "",
       lokasi_kerja: "",
@@ -265,12 +269,27 @@ export default function DetailUser({ access_token, menu = [], activePage, isDisa
                       id="username"
                       name="username"
                       placeholder="username"
-                      disabled // disable sementara
+                      disabled={isDisable}
                       value={formUser.values["username"]}
                       onChange={formUser.handleChange}
                       className={`p-inputtext-sm ${formUser.touched["username"] && Boolean(formUser.errors["username"]) ? "p-invalid" : ""}`}
                     />
                     {formUser.touched["username"] && Boolean(formUser.errors["username"]) && <div className="error-field">{formUser.errors["username"]}</div>}
+                  </div>
+                  <div className={style["field"]}>
+                    <label htmlFor="password">Password</label>
+                    <Password
+                      id="password"
+                      name="password"
+                      placeholder="password"
+                      disabled={isDisable}
+                      value={formUser.values["password"]}
+                      onChange={formUser.handleChange}
+                      className={`p-inputtext-sm ${formUser.touched["password"] && Boolean(formUser.errors["password"]) ? "p-invalid" : ""}`}
+                      toggleMask
+                      inputStyle={{width: "100%"}}
+                    />
+                    {formUser.touched["password"] && Boolean(formUser.errors["password"]) && <div className="error-field">{formUser.errors["password"]}</div>}
                   </div>
                 </div>
               </div>
