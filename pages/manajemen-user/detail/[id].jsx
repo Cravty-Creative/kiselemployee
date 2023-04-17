@@ -65,6 +65,7 @@ export default function DetailUser({ access_token, menu = [], activePage, isDisa
   const [optionTipeKaryawan, setOptionTipeKaryawan] = useState([]);
   const [userName, setUserName] = useState("");
   const [tipeUser, setTipeUser] = useState("");
+  const [initialUsername, setInitialUsername] = useState("");
   const [visibleDeleteDialog, setVisibleDeleteDialog] = useState(false);
 
   const capitalizeString = (string) => {
@@ -104,6 +105,7 @@ export default function DetailUser({ access_token, menu = [], activePage, isDisa
           const dt = res.data;
           setUserName(dt.name);
           setTipeUser(dt.role);
+          setInitialUsername(dt.username || "")
           formUser.setValues({
             nama_lengkap: dt.name || "",
             username: dt.username || "",
@@ -130,12 +132,11 @@ export default function DetailUser({ access_token, menu = [], activePage, isDisa
   const handleEdit = () => {
     setPageLoading(true);
     const params = {
-      user_id: access_token.id,
+      user_id: userId,
       emp_id: userId,
       type_id: formUser.values.tipe_karyawan,
       name: formUser.values.nama_lengkap,
       section: formUser.values.section,
-      username: formUser.values.username,
       password: formUser.values.password,
       work_location: formUser.values.lokasi_kerja,
       job_title: formUser.values.pekerjaan,
@@ -144,6 +145,11 @@ export default function DetailUser({ access_token, menu = [], activePage, isDisa
       spv1_section: formUser.values.spv1_section,
       spv2_section: formUser.values.spv2_section,
     };
+
+    if (initialUsername !== formUser.values.username) {
+      params.username = formUser.values.username;
+    }
+
     serviceKaryawan
       .editKaryawan(access_token.token, params)
       .then((res) => {
