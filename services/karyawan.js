@@ -41,6 +41,12 @@ export const editKaryawan = async (accessToken, data) => {
   });
 };
 
+export const changePassword = async (accessToken, data) => {
+  return await httpCall("POST", API.BASE_URL + API.USER_CHANGE_PASSWORD, data, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+};
+
 export const deleteKaryawan = async (accessToken, user_id) => {
   return await httpCall(
     "DELETE",

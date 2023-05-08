@@ -5,11 +5,10 @@ export async function middleware(req) {
   const accessToken = req.cookies.get("access_token")?.value;
   const menu = req.cookies.get("menu")?.value;
   const url = req.nextUrl.clone();
-  const { pathname } = req.nextUrl;
 
   const accessMenu = {
-    admin: ["/", "/manajemen-user", "/penilaian-karyawan", "/absensi", "/ranking"],
-    karyawan: ["/", "/ranking"],
+    admin: ["/", "/manajemen-user", "/penilaian-karyawan", "/absensi", "/ranking", "/profile"],
+    karyawan: ["/", "/ranking", "/profile"],
   };
 
   if (accessToken && menu) {

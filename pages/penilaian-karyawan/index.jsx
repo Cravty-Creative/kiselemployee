@@ -20,11 +20,11 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { Dialog } from "primereact/dialog";
 import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
+import Loading from "@/components/Loading";
 
 // Style
 import style from "@/styles/penilaian-karyawan.module.css";
 import { Divider } from "primereact/divider";
-import Loading from "@/components/Loading";
 
 // Input Validation
 const validationSchema = yup.object().shape({
@@ -374,6 +374,33 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
     },
   });
 
+  const exportExcel = () => {
+    import('xlsx').then((xlsx) => {
+      const worksheet = xlsx.utils.json_to_sheet(dataNilai);
+      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+      const excelBuffer = xlsx.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array'
+      });
+
+      saveAsExcelFile(excelBuffer, 'data_penilaian');
+    });
+  };
+
+  const saveAsExcelFile = (buffer, fileName) => {
+    import('file-saver').then((module) => {
+      if (module && module.default) {
+        let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        let EXCEL_EXTENSION = '.xlsx';
+        const data = new Blob([buffer], {
+          type: EXCEL_TYPE
+        });
+
+        module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+      }
+    });
+  };
+
   // TEMPLATE
   const actionBodyTemplate = (rowData) => (
     <>
@@ -445,6 +472,14 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
                 }}
               >
                 Input Nilai Karyawan
+              </Button>
+            </div>
+            <div className={style["button-tab"]}>
+              <Button
+                onClick={exportExcel}
+                className={style['btn-export-excel']}
+              >
+                Export ke Excel
               </Button>
             </div>
           </div>

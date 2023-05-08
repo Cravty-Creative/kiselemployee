@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { AppContext } from "@/context";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 // Components
 import Sidebar from "./Sidebar";
@@ -25,6 +26,17 @@ export default function Content({ children, pageTitle = "", secondaryTitle = "",
     items: breadcrumbItems,
   };
   const menuItems = [
+    {
+      template: () => {
+        return (
+          <Link href='/profile' className={style['content-profil-btn']}>
+          <i className="pi pi-user"></i>
+          <span>Profile</span>
+          </Link>
+        )
+      }
+    },
+    { separator: true },
     {
       label: "Logout",
       icon: "pi pi-sign-out",

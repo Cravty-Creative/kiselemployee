@@ -6,6 +6,7 @@ export const TIPE_KARYAWAN = "/employee/type";
 export const USER_GET_ALL = "/user/getall";
 export const USER_CREATE = "/user/create";
 export const USER_EDIT = "/user/edit";
+export const USER_CHANGE_PASSWORD = "/user/changepassword";
 export const USER_DELETE = "/user/delete";
 export const USER_GET_BY_ID = "/user/getbyid";
 export const GET_SECTION = "/user/karyawan/getsection";
