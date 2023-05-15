@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { getDecrypt } from "@/services/encryptDecrypt";
 
 export async function middleware(req) {
@@ -12,20 +12,30 @@ export async function middleware(req) {
   };
 
   if (accessToken && menu) {
-    if (url.pathname === "/login") {
-      url.pathname = "/";
-      return NextResponse.redirect(url);
-    }
-
     const parsedAccessToken = JSON.parse(getDecrypt(accessToken));
-    const urlPath = url.pathname.split('/').slice(0,2).join("/");
-    
-    if (accessMenu[parsedAccessToken.role].includes(urlPath) === false) {
-      url.pathname = "/";
-      return NextResponse.redirect(url);
-    }
+    const parsedMenu = JSON.parse(getDecrypt(menu));
 
-    return NextResponse.next();
+    if (parsedAccessToken === null || parsedMenu === null) {
+      if (url.pathname === "/login") {
+        return NextResponse.next();
+      } else {
+        url.pathname = "/login";
+        return NextResponse.redirect(url);
+      }
+    } else {
+      if (url.pathname === "/login") {
+        url.pathname = "/";
+        return NextResponse.redirect(url);
+      } else {
+        const urlPath = url.pathname.split("/").slice(0, 2).join("/");
+        if (accessMenu[parsedAccessToken.role].includes(urlPath) === false) {
+          url.pathname = "/";
+          return NextResponse.redirect(url);
+        } else {
+          return NextResponse.next();
+        }
+      }
+    }
   } else if (url.pathname !== "/login") {
     url.pathname = "/login";
     return NextResponse.redirect(url);

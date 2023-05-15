@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { getDecrypt } from "@/services/encryptDecrypt";
 import { AppContext } from "@/context";
 import * as serviceKaryawan from "@/services/karyawan.js";
+import JsPDF from "jspdf";
 
 // Components
 import PageHeader from "@/components/PageHeader";
@@ -20,6 +21,7 @@ import style from "@/styles/rangking-karyawan.module.css";
 import Loading from "@/components/Loading";
 import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
+import { classNames } from "primereact/utils";
 
 export default function Ranking({ access_token, menu = [], activePage }) {
   const breadcrumb = [{ label: "Rangking Karyawan", url: activePage }];
@@ -35,6 +37,8 @@ export default function Ranking({ access_token, menu = [], activePage }) {
   const [visibleDialog, setVisibleDialog] = useState(false);
   const [dialogMaximize, setDialogMaximize] = useState(false);
   const [loadingPage, setLoadingPage] = useState(false);
+  const [visiblePdf, setVisiblePdf] = useState(false);
+  const [triggerVisiblePdf, setTriggerVisiblePdf] = useState(false);
 
   const [userName, setUserName] = useState(null);
   const [dataKriteria, setDataKriteria] = useState({});
@@ -178,6 +182,22 @@ export default function Ranking({ access_token, menu = [], activePage }) {
       .finally(() => {
         setLoadingPage(false);
       });
+  };
+
+  const generatePDF = () => {
+    if (ranking.length < 1) return;
+    setVisiblePdf(true);
+    const report = new JsPDF("portrait", "pt", "a4");
+    report.html(document.querySelector("#ranking-data")).then(() => {
+      report.save(
+        `Ranking Data ${new Date().toLocaleString("id", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })}.pdf`
+      );
+      setTriggerVisiblePdf((prev) => (prev ? false : true));
+    });
   };
 
   // TEMPLATE
@@ -434,11 +454,24 @@ export default function Ranking({ access_token, menu = [], activePage }) {
     getRanking();
   }, []);
 
+  useEffect(() => {
+    setVisiblePdf(false);
+  }, [triggerVisiblePdf]);
+
   return (
     <>
       <PageHeader title="Rangking Karyawan" />
       <AppContext.Provider value={{ accessToken: access_token, menu: menu, activePage: activePage }}>
         <Content pageTitle="Rangking Karyawan" secondaryTitle="See who is the best of all your employees" breadcrumbItems={breadcrumb}>
+          <div className={style["button-tab"]}>
+            <Button
+              onClick={() => {
+                generatePDF();
+              }}
+            >
+              Export Ranking
+            </Button>
+          </div>
           <div className={style["search-wrapper"]}>
             <div className={style["field-wrapper"]}>
               <label htmlFor="periode_bulan">Periode Bulan</label>
@@ -539,6 +572,83 @@ export default function Ranking({ access_token, menu = [], activePage }) {
                     >
                       Lihat Detail
                     </Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className={style["no-data"]}>Tidak Ada Data</div>
+            )}
+          </div>
+          <div id="ranking-data" className={classNames(`pdf ${style["pdf-ranking-wrapper"]}`, { hidden: !visiblePdf })}>
+            <div className={style["header-pdf"]}>Ranking Karyawan pada {periodeBulan.toLocaleDateString("en-us", { month: "2-digit", year: "numeric" })}</div>
+            <div className={style["search-wrapper"]}>
+              <div className={style["field-wrapper"]}>
+                <label htmlFor="periode_bulan">Periode Bulan</label>
+                <Calendar
+                  id="periode_bulan"
+                  view="month"
+                  dateFormat="mm/yy"
+                  panelClassName={style["dropdown-option"]}
+                  className={`${style["dropdown"]} ${style["periode-bulan"]}`}
+                  value={periodeBulan}
+                  onChange={(e) => {
+                    setPeriodeBulan(e.value);
+                  }}
+                />
+              </div>
+              <div className={style["field-wrapper"]}>
+                <label htmlFor="tipe_karyawan">Tipe Karyawan</label>
+                <Dropdown
+                  id="tipe_karyawan"
+                  disabled={loadingOptionTipe}
+                  options={[...optionTipe, { id: "all", name: "All" }]}
+                  value={tipe}
+                  onChange={(e) => setTipe(e.value)}
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="tipe karyawan"
+                  panelClassName={style["dropdown-option"]}
+                  className={`${style["dropdown"]} ${style["tipe-karyawan"]}`}
+                />
+              </div>
+              <div className={style["field-wrapper"]}>
+                <label htmlFor="limit">Limit</label>
+                <Dropdown
+                  id="limit"
+                  options={[
+                    { label: 5, value: 5 },
+                    { label: 10, value: 10 },
+                    { label: 20, value: 20 },
+                    { label: 30, value: 30 },
+                    { label: 40, value: 40 },
+                    { label: "All", value: -1 },
+                  ]}
+                  value={limit}
+                  onChange={(e) => setLimit(e.value)}
+                  placeholder="limit"
+                  panelClassName={style["dropdown-option"]}
+                  className={`${style["dropdown"]} ${style["limit"]}`}
+                />
+              </div>
+            </div>
+            {ranking.length ? (
+              ranking.map((item, index) => (
+                <div key={index} className={style["list-ranking"]} ranking={index + 1}>
+                  <div className={style["title-wrapper"]}>
+                    <span className={style["ranking-no"]}>{index + 1}</span>
+                    <div className={style["title1"]}>
+                      <span className={style["ranking-nama"]}>{item.name}</span>
+                      <span className={style["ranking-job"]}>
+                        {item.job_title} - {item.work_location}
+                      </span>
+                    </div>
+                    <span className={`${style["title2"]} ${item.type_id === "Distribution" ? style["secondary"] : ""}`}>{item.type_id}</span>
+                  </div>
+                  <div className={style["title-wrapper"]}>
+                    <div className={style["title1"]}>
+                      <span className={style["nilai-title"]}>Nilai</span>
+                      <span className={style["ranking-nilai"]}>{item.nilai}</span>
+                    </div>
                   </div>
                 </div>
               ))

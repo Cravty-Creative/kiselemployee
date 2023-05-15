@@ -41,3 +41,20 @@ div#__next > main .p-component, .p-inputtext  {
   font-size: 14px;
   font-weight: 500;
 }
+
+.pdf {
+  /* position: absolute; */
+  /* top: 50%; */
+  /* left: 50%; */
+  /* transform: translate(-50%, -50%); */
+  /* min-height: 200mm; */
+  width: 158mm;
+  padding: 1rem;
+  font-size: 10px;
+  background: white;
+  z-index: 9999;
+}
+
+.pdf.hidden {
+  display: none;
+}

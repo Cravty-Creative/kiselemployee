@@ -73,6 +73,10 @@
  border-radius: 10px;
 }
 
+.pdf-ranking-wrapper .list-ranking {
+  padding: 0.5rem 1rem;
+}
+
 .list-ranking[ranking="1"] {
   border: 2px solid #FFD93D;
   background-color: #fefbf0;
@@ -182,4 +186,34 @@
   display: flex;
   flex-direction: column;
   gap: .6rem;
+}
+
+.button-tab {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pdf-ranking-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.pdf-ranking-wrapper .ranking-no, .pdf-ranking-wrapper .ranking-nilai {
+  font-size: 16px;
+}
+
+.pdf-ranking-wrapper .ranking-nama {
+  font-size: 15px;
+}
+
+.pdf-ranking-wrapper .search-wrapper {
+  justify-content: flex-start;
+  padding: .4rem 0;
+  margin: 0;
+}
+
+.pdf-ranking-wrapper .header-pdf {
+  font-weight: 500;
+  font-size: 18px;
 }

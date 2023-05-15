@@ -375,30 +375,85 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
   });
 
   const exportExcel = () => {
-    import('xlsx').then((xlsx) => {
-      const worksheet = xlsx.utils.json_to_sheet(dataNilai);
-      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-      const excelBuffer = xlsx.write(workbook, {
-        bookType: 'xlsx',
-        type: 'array'
+    if (dataNilai.length === 0) return;
+
+    setPageLoading(true);
+    serviceKaryawan
+      .getAllPenilaian(access_token.token, { first: 0, rows: totalRecords || 0, name: search, section, periode: `${bulan.toLowerCase()} ${tahun}` })
+      .then((res) => {
+        if (res.status !== 200) {
+          toast.current.show({ severity: "warn", summary: "Gagal Mendapatkan Data Nilai", detail: res.data.message, life: 3000 });
+        } else {
+          import("xlsx").then((xlsx) => {
+            const wb = xlsx.utils.book_new();
+            let ws = (xlsx.Worksheet = xlsx.utils.json_to_sheet([]));
+
+            const header = {
+              no: "No",
+              nama: "Nama Lengkap",
+              jabatan: "Jabatan",
+              keaktifan: "Keaktifan",
+              separator1: "",
+              pengetahuan: "Pengetahuan",
+              separator2: "",
+              implementasi: "Implementasi",
+              separator3: "",
+            };
+            const subHeader = {
+              no: "No",
+              nama: "Nama Lengkap",
+              jabatan: "Jabatan",
+              keaktifan_nilai: "Nilai",
+              keaktifan_kriteria: "Nilai Kriteria",
+              pengetahuan_nilai: "Nilai",
+              pengetahuan_kriteria: "Nilai Kriteria",
+              implementasi_nilai: "Nilai",
+              implementasi_kriteria: "Nilai Kriteria",
+            };
+
+            let exportData = [];
+            for (const v of res.data.data) {
+              exportData.push({
+                no: v.no || "",
+                nama: v.nama || "",
+                jabatan: v.jabatan || "",
+                keaktifan_nilai: v.keaktifan_nilai || "",
+                keaktifan_kriteria: v.keaktifan_kriteria || "",
+                pengetahuan_nilai: v.pengetahuan_nilai || "",
+                pengetahuan_kriteria: v.pengetahuan_kriteria || "",
+                implementasi_nilai: v.action_nilai || "",
+                implementasi_kriteria: v.action_kriteria || "",
+              });
+            }
+
+            ws["!merges"] = [
+              { s: { r: 2, c: 0 }, e: { r: 3, c: 0 } },
+              { s: { r: 2, c: 1 }, e: { r: 3, c: 1 } },
+              { s: { r: 2, c: 2 }, e: { r: 3, c: 2 } },
+              { s: { r: 2, c: 3 }, e: { r: 2, c: 4 } },
+              { s: { r: 2, c: 5 }, e: { r: 2, c: 6 } },
+              { s: { r: 2, c: 7 }, e: { r: 2, c: 8 } },
+            ];
+            ws["!cols"] = [{ wpx: 21 }, { wpx: 120 }, { wpx: 200 }, { wpx: 40 }, { wpx: 80 }, { wpx: 40 }, { wpx: 80 }, { wpx: 40 }, { wpx: 80 }];
+
+            xlsx.utils.sheet_add_json(ws, [{ header: `Data Penilaian Karyawan, [Bagian Karyawan: ${section || "Semua"}] [Bulan: ${bulan}] [Tahun: ${tahun}] [Filter: ${search || "Tidak Ada"}]` }], {
+              origin: "A1",
+              skipHeader: true,
+            });
+            xlsx.utils.sheet_add_json(ws, [header], { origin: "A3", skipHeader: true });
+            xlsx.utils.sheet_add_json(ws, [subHeader], { origin: "A4", skipHeader: true });
+            xlsx.utils.sheet_add_json(ws, exportData, { origin: "A5", skipHeader: true });
+            xlsx.utils.book_append_sheet(wb, ws, "data");
+            xlsx.writeFile(wb, `Data Penilaian Karyawan - ${bulan} ${tahun} - ${new Date().toLocaleDateString()}.xlsx`);
+          });
+        }
+      })
+      .catch((error) => {
+        toast.current.show({ severity: "error", summary: "Sistem Error", detail: error.response, life: 3000 });
+      })
+      .finally(() => {
+        setPageLoading(false);
       });
-
-      saveAsExcelFile(excelBuffer, 'data_penilaian');
-    });
-  };
-
-  const saveAsExcelFile = (buffer, fileName) => {
-    import('file-saver').then((module) => {
-      if (module && module.default) {
-        let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-        let EXCEL_EXTENSION = '.xlsx';
-        const data = new Blob([buffer], {
-          type: EXCEL_TYPE
-        });
-
-        module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
-      }
-    });
   };
 
   // TEMPLATE
@@ -475,10 +530,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
               </Button>
             </div>
             <div className={style["button-tab"]}>
-              <Button
-                onClick={exportExcel}
-                className={style['btn-export-excel']}
-              >
+              <Button onClick={exportExcel} className={style["btn-export-excel"]}>
                 Export ke Excel
               </Button>
             </div>
