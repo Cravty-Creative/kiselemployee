@@ -399,7 +399,7 @@ export default function Ranking({ access_token, menu = [], activePage }) {
             <Column field="user_id" header="Nama" body={(e) => e.name} />
             <Column field="nama_bobot" header="Nama Bobot" />
             <Column field="nilai_bobot" header="Nilai Bobot" />
-            <Column field="nilai_rumus" header="Nilai rij" />
+            <Column field="nilai_rij" header="Nilai rij" />
             <Column field="nilai_x_bobot" header="Nilai Bobot x Nilai rij" />
             <Column field="user_id" header="Hasil (R1 + R2 + ...RN)" body={(e) => e.hasil} />
           </DataTable>
