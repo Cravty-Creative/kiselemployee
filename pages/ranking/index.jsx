@@ -243,16 +243,35 @@ export default function Ranking({ access_token, menu = [], activePage }) {
         <Column field="type_id" header="Tipe Karyawan" />
         <Column field="c1" header="C1" style={{ width: "5%" }} />
         <Column field="c2" header="C2" style={{ width: "5%" }} />
+        <Column field="k1" header="K1" style={{ width: "5%" }} />
         <Column field="c3" header="C3" style={{ width: "5%" }} />
         <Column field="c4" header="C4" style={{ width: "5%" }} />
         <Column field="c5" header="C5" style={{ width: "5%" }} />
+        <Column field="k2" header="K2" style={{ width: "5%" }} />
         <Column field="c6" header="C6" style={{ width: "5%" }} />
+        <Column field="k3" header="K3" style={{ width: "5%" }} />
         <Column field="c7" header="C7" style={{ width: "5%" }} />
         <Column field="c8" header="C8" style={{ width: "5%" }} />
         <Column field="c9" header="C9" style={{ width: "5%" }} />
         <Column field="c10" header="C10" style={{ width: "5%" }} />
         <Column field="c11" header="C11" style={{ width: "5%" }} />
+        <Column field="k4" header="K4" style={{ width: "5%" }} />
       </DataTable>
+      <h4>Notes</h4>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+        <small>
+          <strong>K1</strong> : Rata-rata C1 - C2
+        </small>
+        <small>
+          <strong>K2</strong> : Rata-rata C3 - C5
+        </small>
+        <small>
+          <strong>K3</strong> : Rata-rata C6
+        </small>
+        <small>
+          <strong>K4</strong> : Rata-rata C7 - C11
+        </small>
+      </div>
     </div>
   );
 
@@ -263,17 +282,10 @@ export default function Ranking({ access_token, menu = [], activePage }) {
         <Column header="Xij" colSpan={11} />
       </Row>
       <Row>
-        <Column header="C1" />
-        <Column header="C2" />
-        <Column header="C3" />
-        <Column header="C4" />
-        <Column header="C5" />
-        <Column header="C6" />
-        <Column header="C7" />
-        <Column header="C8" />
-        <Column header="C9" />
-        <Column header="C10" />
-        <Column header="C11" />
+        <Column header="K1" />
+        <Column header="K2" />
+        <Column header="K3" />
+        <Column header="K4" />
       </Row>
     </ColumnGroup>
   );
@@ -286,17 +298,10 @@ export default function Ranking({ access_token, menu = [], activePage }) {
           <h5>Bagian Inventory</h5>
           <DataTable value={userName ? dataPoinMatriksInventory.filter((v) => v.name === userName) : dataPoinMatriksInventory} showGridlines size="small" headerColumnGroup={poinMatriksGroup}>
             <Column field="name" header="Nama" />
-            <Column field="c1" header="C1" style={{ width: "5%" }} />
-            <Column field="c2" header="C2" style={{ width: "5%" }} />
-            <Column field="c3" header="C3" style={{ width: "5%" }} />
-            <Column field="c4" header="C4" style={{ width: "5%" }} />
-            <Column field="c5" header="C5" style={{ width: "5%" }} />
-            <Column field="c6" header="C6" style={{ width: "5%" }} />
-            <Column field="c7" header="C7" style={{ width: "5%" }} />
-            <Column field="c8" header="C8" style={{ width: "5%" }} />
-            <Column field="c9" header="C9" style={{ width: "5%" }} />
-            <Column field="c10" header="C10" style={{ width: "5%" }} />
-            <Column field="c11" header="C11" style={{ width: "5%" }} />
+            <Column field="k1" header="K1" style={{ width: "5%" }} />
+            <Column field="k2" header="K2" style={{ width: "5%" }} />
+            <Column field="k3" header="K3" style={{ width: "5%" }} />
+            <Column field="k4" header="K4" style={{ width: "5%" }} />
           </DataTable>
         </div>
       ) : (
@@ -307,17 +312,10 @@ export default function Ranking({ access_token, menu = [], activePage }) {
           <h5>Bagian Distribution</h5>
           <DataTable value={userName ? dataPoinMatriksDistribution.filter((v) => v.name === userName) : dataPoinMatriksDistribution} showGridlines size="small" headerColumnGroup={poinMatriksGroup}>
             <Column field="name" header="Nama" />
-            <Column field="c1" header="C1" style={{ width: "5%" }} />
-            <Column field="c2" header="C2" style={{ width: "5%" }} />
-            <Column field="c3" header="C3" style={{ width: "5%" }} />
-            <Column field="c4" header="C4" style={{ width: "5%" }} />
-            <Column field="c5" header="C5" style={{ width: "5%" }} />
-            <Column field="c6" header="C6" style={{ width: "5%" }} />
-            <Column field="c7" header="C7" style={{ width: "5%" }} />
-            <Column field="c8" header="C8" style={{ width: "5%" }} />
-            <Column field="c9" header="C9" style={{ width: "5%" }} />
-            <Column field="c10" header="C10" style={{ width: "5%" }} />
-            <Column field="c11" header="C11" style={{ width: "5%" }} />
+            <Column field="k1" header="K1" style={{ width: "5%" }} />
+            <Column field="k2" header="K2" style={{ width: "5%" }} />
+            <Column field="k3" header="K3" style={{ width: "5%" }} />
+            <Column field="k4" header="K4" style={{ width: "5%" }} />
           </DataTable>
         </div>
       ) : (
@@ -401,10 +399,8 @@ export default function Ranking({ access_token, menu = [], activePage }) {
             <Column field="user_id" header="Nama" body={(e) => e.name} />
             <Column field="nama_bobot" header="Nama Bobot" />
             <Column field="nilai_bobot" header="Nilai Bobot" />
-            <Column field="rumus" header="Rumus Nilai (rij)" />
-            <Column field="isi_rumus" header="Isi Rumus" />
-            <Column field="nilai_rumus" header="Nilai Rumus (rij)" />
-            <Column field="nilai_x_bobot" header="Nilai rij x Nilai Bobot (R)" />
+            <Column field="nilai_rumus" header="Nilai rij" />
+            <Column field="nilai_x_bobot" header="Nilai Bobot x Nilai rij" />
             <Column field="user_id" header="Hasil (R1 + R2 + ...RN)" body={(e) => e.hasil} />
           </DataTable>
         </div>
@@ -427,10 +423,8 @@ export default function Ranking({ access_token, menu = [], activePage }) {
             <Column field="user_id" header="Nama" body={(e) => e.name} />
             <Column field="nama_bobot" header="Nama Bobot" />
             <Column field="nilai_bobot" header="Nilai Bobot" />
-            <Column field="rumus" header="Rumus Nilai (rij)" />
-            <Column field="isi_rumus" header="Isi Rumus" />
-            <Column field="nilai_rumus" header="Nilai Rumus (rij)" />
-            <Column field="nilai_x_bobot" header="Nilai rij x Nilai Bobot (R)" />
+            <Column field="nilai_rij" header="Nilai rij" />
+            <Column field="nilai_x_bobot" header="Nilai Bobot x Nilai rij" />
             <Column field="user_id" header="Hasil (R1 + R2 + ...RN)" body={(e) => e.hasil} />
           </DataTable>
         </div>
