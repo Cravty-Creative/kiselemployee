@@ -30,7 +30,7 @@ export default function Home({ access_token, menu = [], activePage }) {
       last_updated: "",
     },
     {
-      title: "Jumlah Karyawan Distributor",
+      title: "Jumlah Karyawan Distribution",
       jumlah: 0,
       last_updated: "",
     },
