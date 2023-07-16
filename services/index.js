@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// FUNGSI PEMANGGILAN API
 export default async function httpCall(method, url, data = null, headers = null) {
   let result = null;
 

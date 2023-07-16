@@ -50,6 +50,7 @@ const validationSchema = yup.object().shape({
   pekerjaan: yup.string().min(3, "minimal 3 karakter").required("masukan nama pekerjaan anda"),
 });
 
+// HALAMAN TAMBAH USER
 export default function TambahUser({ access_token, menu = [], activePage }) {
   const router = useRouter();
   const toast = useRef(null);
@@ -145,6 +146,7 @@ export default function TambahUser({ access_token, menu = [], activePage }) {
     getTipeKaryawan();
   }, []);
 
+  // HTML ELEMENTS
   return (
     <>
       <PageHeader title="Tambah User" />

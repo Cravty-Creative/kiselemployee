@@ -23,6 +23,7 @@ import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
 import { classNames } from "primereact/utils";
 
+// HALAMAN RANKING
 export default function Ranking({ access_token, menu = [], activePage }) {
   const breadcrumb = [{ label: "Rangking Karyawan", url: activePage }];
   const toast = useRef(null);
@@ -452,6 +453,7 @@ export default function Ranking({ access_token, menu = [], activePage }) {
     setVisiblePdf(false);
   }, [triggerVisiblePdf]);
 
+  // HTML ELEMENTS
   return (
     <>
       <PageHeader title="Rangking Karyawan" />

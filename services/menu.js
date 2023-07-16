@@ -1,3 +1,4 @@
+// MENU PADA APLIKASI
 export const ADMIN = [
   {
     nama: "Dashboard",

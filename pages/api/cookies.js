@@ -1,5 +1,6 @@
 import cookie from "cookie";
 
+// API UNTUK HANDLE COOKIES
 export default function handler(req, res) {
   if (req.method === "POST") {
     const { cookie_name, value, max_age } = req.body;

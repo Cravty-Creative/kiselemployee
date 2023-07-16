@@ -38,11 +38,13 @@ const validationSchema = yup.object().shape({
   status_pulang: yup.string(),
 });
 
+// HALAMAN ABSENSI
 export default function Absensi({ access_token, menu = [], activePage }) {
   const actionMenu = useRef(null);
   const toast = useRef(null);
   const breadcrumb = [{ label: "Absensi Karyawan", url: activePage }];
 
+  // INISIALISASI VARIABLE
   const [pageLoading, setPageLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [optionSection, setOptionSection] = useState([]);
@@ -68,6 +70,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
     rows: 10,
   });
 
+  // FUNGSI SET FORM DIALOG
   const setFormDialog = () => {
     const isAbsensiMasuk = selectedRow.tipe_absen.toLowerCase() === "masuk";
     setIsMasuk(isAbsensiMasuk);
@@ -415,6 +418,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
     getAllAbsensi();
   }, [lazyParams]);
 
+  // HTML ELEMENTS
   return (
     <>
       <PageHeader title="Absensi" />

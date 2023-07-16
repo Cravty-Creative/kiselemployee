@@ -42,6 +42,7 @@ const validationSchema = yup.object().shape({
   action_networking: yup.number().required("wajib memilih action networking"),
 });
 
+// HALAMAN PENILAIAN
 export default function PenilaianKaryawan({ access_token, menu = [], activePage }) {
   const actionMenu = useRef(null);
   const toast = useRef(null);
@@ -512,6 +513,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
     getAllPenilaian();
   }, [lazyParams]);
 
+  // HTML ELEMENTS
   return (
     <>
       <PageHeader title="Penilaian Karyawan" />

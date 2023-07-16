@@ -13,6 +13,7 @@ import { Skeleton } from "primereact/skeleton";
 import style from "@/styles/dashboard.module.css";
 import Link from "next/link";
 
+// HALAMAN DASHBOARD
 export default function Home({ access_token, menu = [], activePage }) {
   const router = useRouter();
   const breadcrumb = [{ label: "Dashboard", url: activePage }];
@@ -72,6 +73,7 @@ export default function Home({ access_token, menu = [], activePage }) {
     getRanking();
   }, []);
 
+  // HTML ELEMENTS
   return (
     <>
       <PageHeader title="Dashboard" />

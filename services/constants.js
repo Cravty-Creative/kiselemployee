@@ -1,3 +1,4 @@
+// VARIABLE KONSTAN UNTUK APLIKASI
 export const BASE_URL = "http://localhost:8000";
 export const SECRET_KEY = "goriorio";
 export const AUTH_LOGIN = "/login";

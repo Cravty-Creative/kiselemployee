@@ -26,6 +26,7 @@ const validationSchema = yup.object().shape({
   password: yup.string().min(6, "minimal 6 karakter").required("password harus diisi"),
 });
 
+// HALAMAN LOGIN
 export default function Login() {
   const router = useRouter();
   const toast = useRef(null);
@@ -89,6 +90,7 @@ export default function Login() {
     onSubmit: () => handleLogin(),
   });
 
+  // HTML ELEMENTS
   return (
     <>
       <PageHeader title="Login" />

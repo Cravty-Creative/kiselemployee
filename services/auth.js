@@ -1,6 +1,7 @@
 import httpCall from ".";
 import * as API from "./constants";
 
+// SERVICE AUTENTIKASI
 export const logout = async () => {
   localStorage.clear();
 

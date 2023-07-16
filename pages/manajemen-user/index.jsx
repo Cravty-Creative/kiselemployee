@@ -164,6 +164,7 @@ export default function ManajemenUser({ access_token, menu = [], activePage }) {
     getAllKaryawan();
   }, [lazyParams, tipeKaryawan]);
 
+  // HTML ELEMENTS
   return (
     <>
       <PageHeader title="Manajemen User" />

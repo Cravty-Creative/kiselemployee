@@ -1,6 +1,7 @@
 import CryptoJS from "crypto-js";
 import { SECRET_KEY } from "./constants";
 
+// FUNGSI ENSKRIPSI
 export const getEncrypt = (value) => {
   try {
     const result = CryptoJS.AES.encrypt(value, SECRET_KEY).toString();

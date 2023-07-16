@@ -1,6 +1,7 @@
 import httpCall from ".";
 import * as API from "./constants";
 
+// SERVICE PANGGIL API KARYAWAN
 export const getTipeKaryawan = async (accessToken) => {
   return await httpCall("GET", API.BASE_URL + API.TIPE_KARYAWAN, null, {
     Authorization: `Bearer ${accessToken}`,
