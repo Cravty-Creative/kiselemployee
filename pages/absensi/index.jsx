@@ -501,6 +501,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
               <Column field="no" header="No" className={style["no-column"]} style={{ textAlign: "center" }}></Column>
               <Column field="nama" header="Nama Lengkap"></Column>
               <Column field="tgl_absen" header="Tanggal"></Column>
+              <Column field="hari" header="Hari"></Column>
               <Column field="tipe_absen" header="Tipe Absen" style={{ textAlign: "center" }}></Column>
               <Column field="jam" header="Jam Absen" style={{ textAlign: "center" }} body={(e) => e.jam || "-"}></Column>
               <Column field="status" header="Status" style={{ textAlign: "center" }}></Column>
@@ -530,7 +531,7 @@ export default function Absensi({ access_token, menu = [], activePage }) {
               name="user_id"
               disabled={loadingKaryawan || tipeDialog !== "Tambah"}
               options={optionKaryawan}
-              value={formik.values["user_id"]}
+              value={tipeDialog === "Tambah" ? formik.values["user_id"] : selectedRow?.user_id ? Number(selectedRow?.user_id) : ""}
               onChange={formik.handleChange}
               placeholder="pilih karyawan"
               optionLabel="name"
