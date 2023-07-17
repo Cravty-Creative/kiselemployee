@@ -703,7 +703,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
               <Dropdown
                 id="keaktifan_olahraga"
                 name="keaktifan_olahraga"
-                options={[{ value: 1 }, { value: 2 }, { value: 3 }]}
+                options={[{ value: 1 }, { value: 3 }, { value: 5 }]}
                 value={formik.values.keaktifan_olahraga}
                 onChange={formik.handleChange}
                 optionLabel="value"
@@ -718,7 +718,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
               <Dropdown
                 id="keaktifan_keagamaan"
                 name="keaktifan_keagamaan"
-                options={[{ value: 1 }, { value: 5 }]}
+                options={[{ value: 3 }, { value: 5 }]}
                 value={formik.values.keaktifan_keagamaan}
                 onChange={formik.handleChange}
                 optionLabel="value"
@@ -733,7 +733,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
               <Dropdown
                 id="keaktifan_sharing_session"
                 name="keaktifan_sharing_session"
-                options={[{ value: 1 }, { value: 5 }]}
+                options={[{ value: 3 }, { value: 5 }]}
                 value={formik.values.keaktifan_sharing_session}
                 onChange={formik.handleChange}
                 optionLabel="value"
@@ -771,7 +771,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
               <Dropdown
                 id="action_agility"
                 name="action_agility"
-                options={[{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 }]}
+                options={[{ value: 3 }, { value: 5 }]}
                 value={formik.values.action_agility}
                 onChange={formik.handleChange}
                 optionLabel="value"
@@ -786,7 +786,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
               <Dropdown
                 id="action_customer_centric"
                 name="action_customer_centric"
-                options={[{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 }]}
+                options={[{ value: 3 } ,{ value: 5 }]}
                 value={formik.values.action_customer_centric}
                 onChange={formik.handleChange}
                 optionLabel="value"
@@ -801,7 +801,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
               <Dropdown
                 id="action_innovation"
                 name="action_innovation"
-                options={[{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 }]}
+                options={[{ value: 3 }, { value: 5 }]}
                 value={formik.values.action_innovation}
                 onChange={formik.handleChange}
                 optionLabel="value"
@@ -818,7 +818,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
               <Dropdown
                 id="action_open_mindset"
                 name="action_open_mindset"
-                options={[{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 }]}
+                options={[{ value: 3 }, { value: 5 }]}
                 value={formik.values.action_open_mindset}
                 onChange={formik.handleChange}
                 optionLabel="value"
@@ -833,7 +833,7 @@ export default function PenilaianKaryawan({ access_token, menu = [], activePage 
               <Dropdown
                 id="action_networking"
                 name="action_networking"
-                options={[{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 }]}
+                options={[{ value: 3 }, { value: 5 }]}
                 value={formik.values.action_networking}
                 onChange={formik.handleChange}
                 optionLabel="value"
