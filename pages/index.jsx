@@ -53,7 +53,7 @@ export default function Home({ access_token, menu = [], activePage }) {
       periode: `${new Date().getMonth()}/${new Date().getFullYear()}`,
       tipe_karyawan: "",
       user_id: "",
-      limit: 5,
+      limit: 10,
     };
 
     serviceKaryawan.getRanking(access_token.token, params).then((res) => {
@@ -62,8 +62,8 @@ export default function Home({ access_token, menu = [], activePage }) {
         for (const key of Object.keys(res.data.ranking)) {
           tempRank = [...tempRank, ...res.data.ranking[key]];
         }
-        tempRank.sort((a, b) => b.nilai - a.nilai);
-        setDataRanking(tempRank);
+        const sortRank = tempRank.sort((a, b) => b.nilai - a.nilai);
+        setDataRanking(sortRank.slice(0, params.limit));
       }
     });
   };
