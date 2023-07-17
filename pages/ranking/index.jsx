@@ -173,8 +173,8 @@ export default function Ranking({ access_token, menu = [], activePage }) {
           for (const key of Object.keys(res.data.ranking)) {
             tempRank = [...tempRank, ...res.data.ranking[key]];
           }
-          tempRank.sort((a, b) => b.nilai - a.nilai);
-          setRanking(tempRank);
+          const sortRank = tempRank.sort((a, b) => b.nilai - a.nilai);
+          setRanking(sortRank.slice(0, limit));
         }
       })
       .catch((error) => {
